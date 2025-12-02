@@ -15,10 +15,11 @@
 
 # next.js
 /.next/
-/out/ 
-/.claude/** 
-/docs/**
+/out/
 
+# claude code (desarrollo local)
+/.claude/
+/docs/
 
 # production
 /build
