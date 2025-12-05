@@ -194,10 +194,10 @@ utils/
 ### 2.4: Configuración Firebase Console (Pendiente - Manual)
 📝 Ver instrucciones en: `FIREBASE_SETUP.md`
 
-- [ ] Desplegar reglas de Firestore desde Console
-- [ ] Crear índices compuestos
-- [ ] Crear colecciones iniciales en Firestore
-- [ ] Crear usuarios de prueba (admin, host, cliente)
+- ✅ Desplegar reglas de Firestore desde Console
+- ✅ Crear índices compuestos
+- ✅ Crear colecciones iniciales en Firestore
+- ✅ Crear usuarios de prueba (admin, host, cliente)
 
 ---
 

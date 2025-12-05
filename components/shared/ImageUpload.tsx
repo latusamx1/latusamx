@@ -3,8 +3,8 @@
 import { useState, useRef, ChangeEvent } from 'react'
 import Image from 'next/image'
 import { Upload, X, Loader2 } from 'lucide-react'
-import { uploadImage, deleteImage, validateFile } from '@/lib/cloudinary/upload'
-import type { UploadOptions } from '@/lib/cloudinary/upload'
+import { uploadImage, deleteImage, validateFile } from '@/lib/cloudinary/client'
+import type { UploadOptions } from '@/lib/cloudinary/client'
 
 interface ImageUploadProps {
   value?: string // URL de la imagen actual

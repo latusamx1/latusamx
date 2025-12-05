@@ -1,4 +1,15 @@
-import { cloudinary, CLOUDINARY_FOLDERS, MAX_FILE_SIZE, ALLOWED_IMAGE_TYPES } from './config'
+/**
+ * Constantes de Cloudinary (duplicadas para evitar importar el SDK server-side)
+ */
+export const CLOUDINARY_FOLDERS = {
+  EVENTOS: 'eventos',
+  SUCURSALES: 'sucursales',
+  USUARIOS: 'usuarios',
+  QR_CODES: 'qr-codes',
+} as const
+
+export const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg']
 
 /**
  * Resultado del upload
@@ -107,44 +118,6 @@ export const uploadImage = async (
 }
 
 /**
- * Upload de imagen desde el servidor (Server Side)
- */
-export const uploadImageServer = async (
-  fileBuffer: Buffer | string,
-  options: UploadOptions = {}
-): Promise<UploadResult> => {
-  try {
-    const folder = options.folder ? CLOUDINARY_FOLDERS[options.folder] : undefined
-
-    const result = await cloudinary.uploader.upload(
-      typeof fileBuffer === 'string' ? fileBuffer : `data:image/png;base64,${fileBuffer.toString('base64')}`,
-      {
-        folder,
-        transformation: options.transformation,
-        public_id: options.publicId,
-        overwrite: options.overwrite ?? false,
-        tags: options.tags,
-        resource_type: 'image',
-      }
-    )
-
-    return {
-      publicId: result.public_id,
-      url: result.url,
-      secureUrl: result.secure_url,
-      width: result.width,
-      height: result.height,
-      format: result.format,
-      resourceType: result.resource_type,
-      bytes: result.bytes,
-    }
-  } catch (error: any) {
-    console.error('Error uploading image to Cloudinary:', error)
-    throw new Error(error.message || 'Error al subir la imagen a Cloudinary')
-  }
-}
-
-/**
  * Eliminar imagen de Cloudinary
  */
 export const deleteImage = async (publicId: string): Promise<void> => {
@@ -159,18 +132,6 @@ export const deleteImage = async (publicId: string): Promise<void> => {
   } catch (error: any) {
     console.error('Error deleting image:', error)
     throw new Error('Error al eliminar la imagen')
-  }
-}
-
-/**
- * Eliminar imagen desde el servidor
- */
-export const deleteImageServer = async (publicId: string): Promise<void> => {
-  try {
-    await cloudinary.uploader.destroy(publicId)
-  } catch (error: any) {
-    console.error('Error deleting image from Cloudinary:', error)
-    throw new Error('Error al eliminar la imagen de Cloudinary')
   }
 }
 

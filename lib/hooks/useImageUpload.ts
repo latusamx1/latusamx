@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { uploadImage, deleteImage } from '@/lib/cloudinary/upload'
-import type { UploadOptions, UploadResult } from '@/lib/cloudinary/upload'
+import { uploadImage, deleteImage } from '@/lib/cloudinary/client'
+import type { UploadOptions, UploadResult } from '@/lib/cloudinary/client'
 
 interface UseImageUploadReturn {
   upload: (file: File, options?: UploadOptions) => Promise<UploadResult>

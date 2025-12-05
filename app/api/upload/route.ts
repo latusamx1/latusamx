@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { uploadImageServer, deleteImageServer } from '@/lib/cloudinary/upload'
+import { uploadImageServer, deleteImageServer } from '@/lib/cloudinary/server'
 
 /**
  * POST /api/upload
