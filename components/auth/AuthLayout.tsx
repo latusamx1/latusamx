@@ -23,8 +23,8 @@ export function AuthLayout({ children, title, subtitle, type = 'login' }: AuthLa
             {/* Logo */}
             <div className="text-center mb-8">
               <Link href="/" className="inline-flex items-center justify-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-2xl">BT</span>
+                <div className="w-fit h-fit p-2 bg-linear-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-2xl">LATUSAMX</span>
                 </div>
               </Link>
               <h1 className="mt-4 text-3xl font-bold text-gray-900">{title}</h1>
@@ -47,7 +47,7 @@ export function AuthLayout({ children, title, subtitle, type = 'login' }: AuthLa
         </div>
       ) : (
         /* Branding Side for Register */
-        <div className="hidden lg:block lg:flex-1 bg-gradient-to-br from-purple-600 via-pink-500 to-blue-600 relative overflow-hidden">
+        <div className="hidden lg:block lg:flex-1 bg-linear-to-br from-purple-600 via-pink-500 to-blue-600 relative overflow-hidden">
           <div className="absolute inset-0 bg-black/10" />
           <div className="relative h-full flex flex-col items-center justify-center p-12 text-white">
             <div className="max-w-md">
@@ -81,7 +81,7 @@ export function AuthLayout({ children, title, subtitle, type = 'login' }: AuthLa
 
       {/* Right Side - Branding (Login) or Form (Register) */}
       {isLogin ? (
-        <div className="hidden lg:block lg:flex-1 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 relative overflow-hidden">
+        <div className="hidden lg:block lg:flex-1 bg-linear-to-br from-blue-600 via-purple-600 to-pink-500 relative overflow-hidden">
           <div className="absolute inset-0 bg-black/10" />
           <div className="relative h-full flex flex-col items-center justify-center p-12 text-white">
             <div className="max-w-md">
@@ -95,7 +95,7 @@ export function AuthLayout({ children, title, subtitle, type = 'login' }: AuthLa
               {/* Features */}
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center shrink-0">
                     <Check className="w-5 h-5" />
                   </div>
                   <div>
@@ -107,7 +107,7 @@ export function AuthLayout({ children, title, subtitle, type = 'login' }: AuthLa
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center shrink-0">
                     <Check className="w-5 h-5" />
                   </div>
                   <div>
@@ -117,7 +117,7 @@ export function AuthLayout({ children, title, subtitle, type = 'login' }: AuthLa
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center shrink-0">
                     <Check className="w-5 h-5" />
                   </div>
                   <div>
@@ -140,8 +140,8 @@ export function AuthLayout({ children, title, subtitle, type = 'login' }: AuthLa
             {/* Logo */}
             <div className="text-center mb-8">
               <Link href="/" className="inline-flex items-center justify-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-2xl">BT</span>
+                <div className="w-fit h-fit p-2 bg-linear-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-2xl">LATUSAMX</span>
                 </div>
               </Link>
               <h1 className="mt-4 text-3xl font-bold text-gray-900">{title}</h1>
