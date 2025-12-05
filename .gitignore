@@ -19,7 +19,6 @@
 
 # claude code (desarrollo local)
 /.claude/
-/docs/
 
 # production
 /build
