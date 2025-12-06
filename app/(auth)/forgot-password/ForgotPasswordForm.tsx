@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button'
 import { InputWithIcon } from '@/components/auth/InputWithIcon'
 import { AuthLayout } from '@/components/auth/AuthLayout'
 import { forgotPasswordSchema, type ForgotPasswordFormData } from '@/lib/validations/auth'
-import { sendPasswordResetEmail } from '@/lib/firebase/auth'
+import { resetPassword } from '@/lib/firebase/auth'
 
 export function ForgotPasswordForm() {
   const router = useRouter()
@@ -31,7 +31,7 @@ export function ForgotPasswordForm() {
   const onSubmit = async (data: ForgotPasswordFormData) => {
     setIsLoading(true)
     try {
-      await sendPasswordResetEmail(data.email)
+      await resetPassword(data.email)
       setEmailSent(true)
       toast.success('Email enviado', {
         description: 'Revisa tu bandeja de entrada para restablecer tu contraseña',
