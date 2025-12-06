@@ -4,6 +4,8 @@ import {
   signOut,
   onAuthStateChanged,
   sendPasswordResetEmail,
+  confirmPasswordReset,
+  verifyPasswordResetCode,
   updateProfile,
   signInWithPopup,
   GoogleAuthProvider,
@@ -163,11 +165,37 @@ export const logout = async (): Promise<void> => {
 }
 
 /**
- * Recuperar contraseña
+ * Enviar email de recuperación de contraseña
  */
 export const resetPassword = async (email: string): Promise<void> => {
   try {
     await sendPasswordResetEmail(auth, email)
+  } catch (error: any) {
+    throw new Error(getAuthErrorMessage(error.code))
+  }
+}
+
+/**
+ * Verificar código de reset de contraseña
+ */
+export const verifyResetCode = async (code: string): Promise<string> => {
+  try {
+    const email = await verifyPasswordResetCode(auth, code)
+    return email
+  } catch (error: any) {
+    throw new Error(getAuthErrorMessage(error.code))
+  }
+}
+
+/**
+ * Confirmar cambio de contraseña con código
+ */
+export const confirmNewPassword = async (
+  code: string,
+  newPassword: string
+): Promise<void> => {
+  try {
+    await confirmPasswordReset(auth, code, newPassword)
   } catch (error: any) {
     throw new Error(getAuthErrorMessage(error.code))
   }
@@ -223,6 +251,8 @@ const getAuthErrorMessage = (errorCode: string): string => {
     'auth/too-many-requests': 'Demasiados intentos. Intenta más tarde',
     'auth/network-request-failed': 'Error de conexión. Verifica tu internet',
     'auth/requires-recent-login': 'Vuelve a iniciar sesión para continuar',
+    'auth/invalid-action-code': 'El enlace de recuperación es inválido o ha expirado',
+    'auth/expired-action-code': 'El enlace de recuperación ha expirado',
   }
 
   return errorMessages[errorCode] || 'Error de autenticación'
