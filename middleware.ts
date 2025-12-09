@@ -1,0 +1,50 @@
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+
+// Rutas que requieren autenticación
+const protectedRoutes = ['/dashboard', '/eventos', '/reservas', '/configuracion']
+
+// Rutas de autenticación (no accesibles si ya está autenticado)
+const authRoutes = ['/login', '/register']
+
+// Rutas públicas
+const publicRoutes = ['/', '/test-conexion']
+
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  // Obtener el token de autenticación de las cookies
+  // Nota: Firebase usa IndexedDB en el cliente, por lo que este middleware
+  // solo puede verificar si hay una sesión activa basándose en cookies personalizadas
+  const sessionCookie = request.cookies.get('__session')
+
+  const isAuthenticated = !!sessionCookie
+
+  // Si la ruta requiere autenticación y no está autenticado
+  if (protectedRoutes.some((route) => pathname.startsWith(route)) && !isAuthenticated) {
+    const loginUrl = new URL('/login', request.url)
+    loginUrl.searchParams.set('redirect', pathname)
+    return NextResponse.redirect(loginUrl)
+  }
+
+  // Si la ruta es de autenticación y ya está autenticado
+  if (authRoutes.some((route) => pathname.startsWith(route)) && isAuthenticated) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
+  return NextResponse.next()
+}
+
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public assets
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.png$|.*\\.jpg$|.*\\.jpeg$|.*\\.svg$).*)',
+  ],
+}

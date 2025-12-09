@@ -5,6 +5,9 @@ import {
   onAuthStateChanged,
   sendPasswordResetEmail,
   updateProfile,
+  signInWithPopup,
+  GoogleAuthProvider,
+  GithubAuthProvider,
   User,
   UserCredential,
 } from 'firebase/auth'
@@ -77,6 +80,72 @@ export const registerWithEmail = async (data: RegisterData): Promise<User> => {
     await setDoc(doc(db, 'usuarios', user.uid), userProfile)
 
     return user
+  } catch (error: any) {
+    throw new Error(getAuthErrorMessage(error.code))
+  }
+}
+
+/**
+ * Iniciar sesión con Google
+ */
+export const loginWithGoogle = async (): Promise<UserCredential> => {
+  try {
+    const provider = new GoogleAuthProvider()
+    provider.setCustomParameters({
+      prompt: 'select_account',
+    })
+    const userCredential = await signInWithPopup(auth, provider)
+
+    // Verificar si el usuario ya existe en Firestore
+    const userProfile = await getUserProfile(userCredential.user.uid)
+
+    // Si no existe, crear perfil
+    if (!userProfile) {
+      const newUserProfile: Omit<UserProfile, 'uid'> = {
+        email: userCredential.user.email || '',
+        nombre: userCredential.user.displayName || 'Usuario',
+        rol: 'cliente',
+        createdAt: serverTimestamp() as any,
+        updatedAt: serverTimestamp() as any,
+      }
+
+      await setDoc(doc(db, 'usuarios', userCredential.user.uid), newUserProfile)
+    }
+
+    return userCredential
+  } catch (error: any) {
+    throw new Error(getAuthErrorMessage(error.code))
+  }
+}
+
+/**
+ * Iniciar sesión con GitHub
+ */
+export const loginWithGithub = async (): Promise<UserCredential> => {
+  try {
+    const provider = new GithubAuthProvider()
+    provider.setCustomParameters({
+      allow_signup: 'true',
+    })
+    const userCredential = await signInWithPopup(auth, provider)
+
+    // Verificar si el usuario ya existe en Firestore
+    const userProfile = await getUserProfile(userCredential.user.uid)
+
+    // Si no existe, crear perfil
+    if (!userProfile) {
+      const newUserProfile: Omit<UserProfile, 'uid'> = {
+        email: userCredential.user.email || '',
+        nombre: userCredential.user.displayName || 'Usuario',
+        rol: 'cliente',
+        createdAt: serverTimestamp() as any,
+        updatedAt: serverTimestamp() as any,
+      }
+
+      await setDoc(doc(db, 'usuarios', userCredential.user.uid), newUserProfile)
+    }
+
+    return userCredential
   } catch (error: any) {
     throw new Error(getAuthErrorMessage(error.code))
   }

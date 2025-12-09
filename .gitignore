@@ -22,6 +22,8 @@
 
 # production
 /build
+/desing/**
+/docs/**
 
 # misc
 .DS_Store
