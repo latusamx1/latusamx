@@ -17,7 +17,7 @@
 /.next/
 /out/
 
-# claude code (desarrollo local)
+# configuración de agentes (desarrollo local)
 /.claude/
 
 # production
