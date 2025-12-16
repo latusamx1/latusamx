@@ -40,13 +40,26 @@ export function useAuth() {
     return () => unsubscribe()
   }, [setUser, setUserProfile, setLoading, setInitialized])
 
+  // Helper para redirigir según el rol del usuario
+  const redirectByRole = async (uid: string) => {
+    const profile = await getUserProfile(uid)
+
+    if (profile?.rol === 'admin') {
+      router.push('/dashboard/admin')
+    } else if (profile?.rol === 'host') {
+      router.push('/dashboard/host')
+    } else {
+      router.push('/dashboard/cliente')
+    }
+  }
+
   // Login con email y contraseña
   const login = async (email: string, password: string) => {
     try {
       setLoading(true)
-      await loginWithEmail(email, password)
+      const firebaseUser = await loginWithEmail(email, password)
       toast.success('¡Bienvenido de vuelta!')
-      router.push('/dashboard')
+      await redirectByRole(firebaseUser.uid)
     } catch (error: any) {
       toast.error(error.message)
       throw error
@@ -59,9 +72,9 @@ export function useAuth() {
   const loginGoogle = async () => {
     try {
       setLoading(true)
-      await loginWithGoogle()
+      const firebaseUser = await loginWithGoogle()
       toast.success('¡Bienvenido!')
-      router.push('/dashboard')
+      await redirectByRole(firebaseUser.uid)
     } catch (error: any) {
       toast.error(error.message)
       throw error
@@ -74,9 +87,9 @@ export function useAuth() {
   const loginGithub = async () => {
     try {
       setLoading(true)
-      await loginWithGithub()
+      const firebaseUser = await loginWithGithub()
       toast.success('¡Bienvenido!')
-      router.push('/dashboard')
+      await redirectByRole(firebaseUser.uid)
     } catch (error: any) {
       toast.error(error.message)
       throw error
@@ -89,9 +102,9 @@ export function useAuth() {
   const register = async (data: RegisterData) => {
     try {
       setLoading(true)
-      await registerWithEmail(data)
+      const firebaseUser = await registerWithEmail(data)
       toast.success('¡Cuenta creada exitosamente!')
-      router.push('/dashboard')
+      await redirectByRole(firebaseUser.uid)
     } catch (error: any) {
       toast.error(error.message)
       throw error
