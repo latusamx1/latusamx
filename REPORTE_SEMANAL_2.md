@@ -1,7 +1,7 @@
 # 📊 Reporte Semanal #2 - Old Texas BBQ CRM
 
 **Período:** 12 - 19 de diciembre, 2024
-**Proyecto:** Sistema CRM para Big Texas BBQ - Josué
+**Proyecto:** Sistema LATUSAMX - Josué
 **Equipo:** Josué & Pedro (Desarrollo)
 
 ---
@@ -357,19 +357,6 @@ Cliente  → /dashboard/cliente
 - ✅ Historial limpio con `git filter-branch`
 
 ---
-
-## 📈 Progreso del Proyecto
-
-### Estado General: 45% Completado ⬆️ (+15% esta semana)
-
-```
-FASE 1: Setup Inicial ████████████████████ 100%
-FASE 2: Firebase Setup ███████████████████ 100%
-FASE 3: Autenticación ████████████████████ 100%
-FASE 4: Roles y Permisos █████████████████ 100% ⭐ NUEVO
-FASE 5: UI Components ████████████████████ 100% ⭐ NUEVO
-FASE 6: Gestión de Eventos ░░░░░░░░░░░░░░   0%
-FASE 7: Gestión de Reservas ░░░░░░░░░░░░░   0%
 ```
 
 ### Desglose por Módulo
@@ -380,7 +367,7 @@ FASE 7: Gestión de Reservas ░░░░░░░░░░░░░   0%
 | 🔥 Firebase Config | ✅ Completo | 100% | - |
 | 🔐 Autenticación | ✅ Completo | 100% | - |
 | 👥 Roles y Permisos | ✅ Completo | 100% | +100% ⭐ |
-| 📱 Layout Components | ✅ Completo | 100% | +100% ⭐ |
+| 📱 Layout Components | ✅ Completo | 70% | +70% ⭐ |
 | 🎫 Gestión Eventos | ⚪ Pendiente | 0% | - |
 | 📋 Gestión Reservas | ⚪ Pendiente | 0% | - |
 | 🚚 Órdenes | ⚪ Pendiente | 0% | - |
@@ -662,9 +649,7 @@ Con la infraestructura UI/UX y de permisos completada, el desarrollo de features
 
 ---
 
-**Reporte generado:** 19 de diciembre, 2024
-**Próxima revisión:** 26 de diciembre, 2024
+**Reporte generado:** 19 de diciembre, 2025
+**Próxima revisión:** 26 de diciembre, 2025
 
 ---
-
-_Este reporte es parte del sistema de seguimiento del proyecto CRM Old Texas BBQ._
