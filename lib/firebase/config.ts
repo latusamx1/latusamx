@@ -50,4 +50,14 @@ export const auth: Auth = getAuth(app)
 // Exportar db - se inicializa al importar este módulo
 export const db: Firestore = getFirestore(app)
 
+// Log para debugging
+if (typeof window !== 'undefined') {
+  console.log('🔥 Firebase inicializado en cliente:', {
+    app: !!app,
+    auth: !!auth,
+    db: !!db,
+    dbType: typeof db,
+  })
+}
+
 export default app

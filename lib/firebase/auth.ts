@@ -206,6 +206,7 @@ export const confirmNewPassword = async (
  */
 export const getUserProfile = async (uid: string): Promise<UserProfile | null> => {
   try {
+    console.log('🔍 getUserProfile - db:', { db, type: typeof db, uid })
     const docRef = doc(db, 'usuarios', uid)
     const docSnap = await getDoc(docRef)
 
