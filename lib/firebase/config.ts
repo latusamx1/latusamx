@@ -1,4 +1,4 @@
-import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app'
+import { initializeApp, getApps, type FirebaseApp } from 'firebase/app'
 import { getAuth, type Auth } from 'firebase/auth'
 import { getFirestore, type Firestore } from 'firebase/firestore'
 
@@ -13,24 +13,41 @@ const firebaseConfig = {
 }
 
 // Validar que todas las variables de entorno estén configuradas
-if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId) {
-  console.error('❌ Firebase no está configurado correctamente. Variables faltantes:', {
-    apiKey: !!firebaseConfig.apiKey,
-    authDomain: !!firebaseConfig.authDomain,
-    projectId: !!firebaseConfig.projectId,
-  })
-  throw new Error(
-    '❌ Firebase no está configurado correctamente. Verifica tu archivo .env.local'
-  )
+function validateConfig() {
+  if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId) {
+    console.error('❌ Firebase no está configurado correctamente. Variables faltantes:', {
+      apiKey: !!firebaseConfig.apiKey,
+      authDomain: !!firebaseConfig.authDomain,
+      projectId: !!firebaseConfig.projectId,
+    })
+    throw new Error(
+      '❌ Firebase no está configurado correctamente. Verifica tu archivo .env.local'
+    )
+  }
 }
 
-// Inicializar Firebase (evitar múltiples inicializaciones)
-const app: FirebaseApp = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp()
+// Inicializar Firebase solo en el cliente
+function initializeFirebaseApp(): FirebaseApp {
+  // Validar configuración
+  validateConfig()
 
-// Inicializar servicios de Firebase directamente
-const auth: Auth = getAuth(app)
-const db: Firestore = getFirestore(app)
+  // Si ya existe una app inicializada, retornarla
+  const apps = getApps()
+  if (apps.length > 0) {
+    return apps[0]
+  }
 
-// Exportar servicios de Firebase
-export { auth, db }
+  // Inicializar nueva app
+  return initializeApp(firebaseConfig)
+}
+
+// Exportar app - se inicializa al importar este módulo
+export const app = initializeFirebaseApp()
+
+// Exportar auth - se inicializa al importar este módulo
+export const auth: Auth = getAuth(app)
+
+// Exportar db - se inicializa al importar este módulo
+export const db: Firestore = getFirestore(app)
+
 export default app
