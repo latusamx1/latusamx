@@ -1,5 +1,5 @@
-import { initializeApp, getApps, getApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
+import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app'
+import { getAuth, type Auth } from 'firebase/auth'
 import { getFirestore, type Firestore } from 'firebase/firestore'
 
 // Configuración de Firebase desde variables de entorno
@@ -14,16 +14,39 @@ const firebaseConfig = {
 
 // Validar que todas las variables de entorno estén configuradas
 if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId) {
+  console.error('❌ Firebase no está configurado correctamente. Variables faltantes:', {
+    apiKey: !!firebaseConfig.apiKey,
+    authDomain: !!firebaseConfig.authDomain,
+    projectId: !!firebaseConfig.projectId,
+  })
   throw new Error(
     '❌ Firebase no está configurado correctamente. Verifica tu archivo .env.local'
   )
 }
 
 // Inicializar Firebase (evitar múltiples inicializaciones)
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp()
+let app: FirebaseApp
+try {
+  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp()
+} catch (error) {
+  console.error('Error al inicializar Firebase:', error)
+  throw error
+}
+
+// Inicializar servicios de Firebase
+let authInstance: Auth
+let dbInstance: Firestore
+
+try {
+  authInstance = getAuth(app)
+  dbInstance = getFirestore(app)
+} catch (error) {
+  console.error('Error al inicializar servicios de Firebase:', error)
+  throw error
+}
 
 // Exportar servicios de Firebase
-export const auth = getAuth(app)
-export const db: Firestore = getFirestore(app)
+export const auth: Auth = authInstance
+export const db: Firestore = dbInstance
 
 export default app
