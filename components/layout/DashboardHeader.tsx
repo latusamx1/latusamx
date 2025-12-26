@@ -60,8 +60,8 @@ export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
         {/* User Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white font-semibold">
+            <Button variant="ghost" className="relative w-fit h-fit p-2 rounded-full">
+              <div className="flex w-fit h-fit p-3 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white font-semibold">
                 {userProfile?.nombre?.charAt(0).toUpperCase() || 'U'}
               </div>
             </Button>
