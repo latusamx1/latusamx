@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { RequireCliente } from '@/components/auth/RequireRole'
+import { DashboardHeader } from '@/components/layout/DashboardHeader'
 
 export const metadata: Metadata = {
   title: 'Mi Dashboard | Sistema',
@@ -9,8 +10,10 @@ export const metadata: Metadata = {
 export default function ClienteDashboardPage() {
   return (
     <RequireCliente>
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen bg-gray-50">
+        <DashboardHeader />
+        <div className="p-8">
+          <div className="max-w-7xl mx-auto">
           <div className="bg-white rounded-lg shadow p-6">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Mi Dashboard</h1>
             <p className="text-gray-600 mb-8">Bienvenido a tu panel personal</p>
@@ -60,6 +63,7 @@ export default function ClienteDashboardPage() {
             </p>
           </div>
           </div>
+        </div>
         </div>
       </div>
     </RequireCliente>

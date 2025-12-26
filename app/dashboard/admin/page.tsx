@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { RequireAdmin } from '@/components/auth/RequireRole'
+import { DashboardHeader } from '@/components/layout/DashboardHeader'
 
 export const metadata: Metadata = {
   title: 'Dashboard Admin | Sistema',
@@ -9,7 +10,9 @@ export const metadata: Metadata = {
 export default function AdminDashboardPage() {
   return (
     <RequireAdmin>
-      <div className="min-h-screen bg-gray-50 p-8">
+      <div className="min-h-screen bg-gray-50">
+        <DashboardHeader />
+        <div className="p-8">
         <div className="max-w-7xl mx-auto">
           <div className="bg-white rounded-lg shadow p-6">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard Administrativo</h1>
@@ -58,6 +61,7 @@ export default function AdminDashboardPage() {
               </div>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </RequireAdmin>
