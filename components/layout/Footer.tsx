@@ -35,32 +35,24 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-red-700 text-white font-bold text-xl">
-                BT
+              <div className="flex h-fit w-fit p-2 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-red-700 text-white font-bold text-xl">
+                LATUSAMX
               </div>
-              <span className="font-bold text-xl">
-                <span className="text-gray-900">Big </span>
-                <span className="text-red-600">Texas</span>
-              </span>
             </div>
-            <p className="text-sm text-gray-600 mb-4 max-w-sm">
-              Sistema de gestión de eventos y reservas para Big Texas BBQ Josué.
-              Compra tickets, reserva mesas y disfruta de la mejor experiencia BBQ.
-            </p>
-
+            
             {/* Contacto */}
             <div className="space-y-2 text-sm text-gray-600">
               <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-red-600" />
-                <span>+58 424-123-4567</span>
+                <span>+52 123-123-1234</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-red-600" />
-                <span>contacto@bigtexasbbq.com</span>
+                <span>latusamx1@gmail.com</span>
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-red-600" />
-                <span>Valencia, Carabobo, Venezuela</span>
+                <span>Monterrey, Nuevo Leon, Mexico</span>
               </div>
             </div>
 
@@ -119,7 +111,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="border-t mt-8 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-gray-600">
-            © {currentYear} Big Texas BBQ Josué. Todos los derechos reservados.
+            © {currentYear} LATUSAMX. Todos los derechos reservados.
           </p>
           <div className="flex items-center gap-4 text-sm text-gray-600">
             <Link href="/terminos" className="hover:text-red-600 transition-colors">
