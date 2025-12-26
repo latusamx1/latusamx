@@ -42,6 +42,10 @@ export const loginWithEmail = async (
   email: string,
   password: string
 ): Promise<UserCredential> => {
+  if (!auth) {
+    throw new Error('Firebase Auth no está inicializado')
+  }
+
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password)
     return userCredential
@@ -54,6 +58,10 @@ export const loginWithEmail = async (
  * Registrar nuevo usuario
  */
 export const registerWithEmail = async (data: RegisterData): Promise<User> => {
+  if (!auth || !db) {
+    throw new Error('Firebase no está inicializado')
+  }
+
   try {
     // Crear usuario en Firebase Auth
     const userCredential = await createUserWithEmailAndPassword(
@@ -91,6 +99,10 @@ export const registerWithEmail = async (data: RegisterData): Promise<User> => {
  * Iniciar sesión con Google
  */
 export const loginWithGoogle = async (): Promise<UserCredential> => {
+  if (!auth || !db) {
+    throw new Error('Firebase no está inicializado')
+  }
+
   try {
     const provider = new GoogleAuthProvider()
     provider.setCustomParameters({
@@ -124,6 +136,10 @@ export const loginWithGoogle = async (): Promise<UserCredential> => {
  * Iniciar sesión con GitHub
  */
 export const loginWithGithub = async (): Promise<UserCredential> => {
+  if (!auth || !db) {
+    throw new Error('Firebase no está inicializado')
+  }
+
   try {
     const provider = new GithubAuthProvider()
     provider.setCustomParameters({
@@ -157,6 +173,10 @@ export const loginWithGithub = async (): Promise<UserCredential> => {
  * Cerrar sesión
  */
 export const logout = async (): Promise<void> => {
+  if (!auth) {
+    throw new Error('Firebase Auth no está inicializado')
+  }
+
   try {
     await signOut(auth)
   } catch (error: any) {
@@ -168,6 +188,10 @@ export const logout = async (): Promise<void> => {
  * Enviar email de recuperación de contraseña
  */
 export const resetPassword = async (email: string): Promise<void> => {
+  if (!auth) {
+    throw new Error('Firebase Auth no está inicializado')
+  }
+
   try {
     await sendPasswordResetEmail(auth, email)
   } catch (error: any) {
@@ -179,6 +203,10 @@ export const resetPassword = async (email: string): Promise<void> => {
  * Verificar código de reset de contraseña
  */
 export const verifyResetCode = async (code: string): Promise<string> => {
+  if (!auth) {
+    throw new Error('Firebase Auth no está inicializado')
+  }
+
   try {
     const email = await verifyPasswordResetCode(auth, code)
     return email
@@ -194,6 +222,10 @@ export const confirmNewPassword = async (
   code: string,
   newPassword: string
 ): Promise<void> => {
+  if (!auth) {
+    throw new Error('Firebase Auth no está inicializado')
+  }
+
   try {
     await confirmPasswordReset(auth, code, newPassword)
   } catch (error: any) {
@@ -205,6 +237,18 @@ export const confirmNewPassword = async (
  * Obtener perfil de usuario desde Firestore
  */
 export const getUserProfile = async (uid: string): Promise<UserProfile | null> => {
+  // Validación: Firebase debe estar inicializado
+  if (!db) {
+    console.error('Firebase db no está inicializado')
+    return null
+  }
+
+  // Validación: uid debe estar definido y no ser vacío
+  if (!uid || typeof uid !== 'string' || uid.trim() === '') {
+    console.error('getUserProfile: uid inválido', uid)
+    return null
+  }
+
   try {
     const userDoc = await getDoc(doc(db, 'usuarios', uid))
 
@@ -226,6 +270,10 @@ export const getUserProfile = async (uid: string): Promise<UserProfile | null> =
  * Observer de cambios de autenticación
  */
 export const onAuthChanged = (callback: (user: User | null) => void) => {
+  if (!auth) {
+    console.error('Firebase Auth no está inicializado')
+    return () => {}
+  }
   return onAuthStateChanged(auth, callback)
 }
 
@@ -233,6 +281,10 @@ export const onAuthChanged = (callback: (user: User | null) => void) => {
  * Obtener usuario actual
  */
 export const getCurrentUser = (): User | null => {
+  if (!auth) {
+    console.error('Firebase Auth no está inicializado')
+    return null
+  }
   return auth.currentUser
 }
 

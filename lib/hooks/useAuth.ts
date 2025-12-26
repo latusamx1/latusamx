@@ -26,10 +26,15 @@ export function useAuth() {
       setUser(firebaseUser)
 
       if (firebaseUser) {
+        // Establecer cookie de sesión para el middleware
+        document.cookie = `__session=${firebaseUser.uid}; path=/; max-age=604800; SameSite=Lax`
+
         // Obtener perfil del usuario
         const profile = await getUserProfile(firebaseUser.uid)
         setUserProfile(profile)
       } else {
+        // Eliminar cookie de sesión si no hay usuario
+        document.cookie = '__session=; path=/; max-age=0'
         setUserProfile(null)
       }
 
@@ -44,22 +49,34 @@ export function useAuth() {
   const redirectByRole = async (uid: string) => {
     const profile = await getUserProfile(uid)
 
-    if (profile?.rol === 'admin') {
-      router.push('/dashboard/admin')
-    } else if (profile?.rol === 'host') {
-      router.push('/dashboard/host')
-    } else {
+    if (!profile) {
+      // Si no hay perfil, redirigir a una página de error o configuración
       router.push('/dashboard/cliente')
+      return
     }
+
+    // Mapeo de roles a rutas
+    const roleRoutes: Record<string, string> = {
+      admin: '/dashboard/admin',
+      host: '/dashboard/host',
+      cliente: '/dashboard/cliente',
+    }
+
+    const route = roleRoutes[profile.rol] || '/dashboard/cliente'
+    router.push(route)
   }
 
   // Login con email y contraseña
   const login = async (email: string, password: string) => {
     try {
       setLoading(true)
-      const firebaseUser = await loginWithEmail(email, password)
+      const userCredential = await loginWithEmail(email, password)
+
+      // Establecer cookie de sesión para el middleware
+      document.cookie = `__session=${userCredential.user.uid}; path=/; max-age=604800; SameSite=Lax`
+
       toast.success('¡Bienvenido de vuelta!')
-      await redirectByRole(firebaseUser.uid)
+      await redirectByRole(userCredential.user.uid)
     } catch (error: any) {
       toast.error(error.message)
       throw error
@@ -72,9 +89,13 @@ export function useAuth() {
   const loginGoogle = async () => {
     try {
       setLoading(true)
-      const firebaseUser = await loginWithGoogle()
+      const userCredential = await loginWithGoogle()
+
+      // Establecer cookie de sesión para el middleware
+      document.cookie = `__session=${userCredential.user.uid}; path=/; max-age=604800; SameSite=Lax`
+
       toast.success('¡Bienvenido!')
-      await redirectByRole(firebaseUser.uid)
+      await redirectByRole(userCredential.user.uid)
     } catch (error: any) {
       toast.error(error.message)
       throw error
@@ -87,9 +108,13 @@ export function useAuth() {
   const loginGithub = async () => {
     try {
       setLoading(true)
-      const firebaseUser = await loginWithGithub()
+      const userCredential = await loginWithGithub()
+
+      // Establecer cookie de sesión para el middleware
+      document.cookie = `__session=${userCredential.user.uid}; path=/; max-age=604800; SameSite=Lax`
+
       toast.success('¡Bienvenido!')
-      await redirectByRole(firebaseUser.uid)
+      await redirectByRole(userCredential.user.uid)
     } catch (error: any) {
       toast.error(error.message)
       throw error
@@ -102,9 +127,13 @@ export function useAuth() {
   const register = async (data: RegisterData) => {
     try {
       setLoading(true)
-      const firebaseUser = await registerWithEmail(data)
+      const user = await registerWithEmail(data)
+
+      // Establecer cookie de sesión para el middleware
+      document.cookie = `__session=${user.uid}; path=/; max-age=604800; SameSite=Lax`
+
       toast.success('¡Cuenta creada exitosamente!')
-      await redirectByRole(firebaseUser.uid)
+      await redirectByRole(user.uid)
     } catch (error: any) {
       toast.error(error.message)
       throw error
@@ -117,6 +146,10 @@ export function useAuth() {
   const logout = async () => {
     try {
       await firebaseLogout()
+
+      // Eliminar cookie de sesión
+      document.cookie = '__session=; path=/; max-age=0'
+
       reset()
       toast.success('Sesión cerrada')
       router.push('/login')

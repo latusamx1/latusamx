@@ -25,21 +25,21 @@ import type { UserWithRole } from '@/types/roles.types'
  * Hook que proporciona acceso a permisos y roles del usuario
  */
 export function usePermissions(): PermissionContext {
-  const { user } = useAuth()
+  const { userProfile } = useAuth()
 
-  // Convertir user de Firebase a UserWithRole
+  // Convertir userProfile a UserWithRole
   const userWithRole = useMemo<UserWithRole | null>(() => {
-    if (!user) return null
+    if (!userProfile) return null
 
     return {
-      uid: user.uid,
-      email: user.email || '',
-      nombre: user.displayName || user.email?.split('@')[0] || 'Usuario',
-      rol: (user.rol as Rol) || Rol.CLIENTE,
-      telefono: user.phoneNumber || undefined,
-      createdAt: user.metadata.creationTime ? new Date(user.metadata.creationTime) : new Date(),
+      uid: userProfile.uid,
+      email: userProfile.email,
+      nombre: userProfile.nombre,
+      rol: userProfile.rol,
+      telefono: userProfile.telefono,
+      createdAt: userProfile.createdAt,
     }
-  }, [user])
+  }, [userProfile])
 
   // Obtener permisos del usuario
   const permissions = useMemo<Permission[]>(() => {

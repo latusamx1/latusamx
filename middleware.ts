@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-// Rutas que requieren autenticación
-const protectedRoutes = ['/dashboard', '/eventos', '/reservas', '/configuracion']
+// Rutas que requieren autenticación (pero no verificamos rol aquí)
+const protectedRoutes = ['/eventos', '/reservas', '/configuracion']
 
 // Rutas de autenticación (no accesibles si ya está autenticado)
 const authRoutes = ['/login', '/register']
@@ -14,11 +14,20 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Obtener el token de autenticación de las cookies
-  // Nota: Firebase usa IndexedDB en el cliente, por lo que este middleware
-  // solo puede verificar si hay una sesión activa basándose en cookies personalizadas
   const sessionCookie = request.cookies.get('__session')
-
   const isAuthenticated = !!sessionCookie
+
+  // Permitir acceso a todas las rutas de dashboard si está autenticado
+  // La verificación de rol se hace en el cliente
+  if (pathname.startsWith('/dashboard')) {
+    if (!isAuthenticated) {
+      const loginUrl = new URL('/login', request.url)
+      loginUrl.searchParams.set('redirect', pathname)
+      return NextResponse.redirect(loginUrl)
+    }
+    // Si está autenticado, permitir acceso (el cliente redirigirá si el rol no coincide)
+    return NextResponse.next()
+  }
 
   // Si la ruta requiere autenticación y no está autenticado
   if (protectedRoutes.some((route) => pathname.startsWith(route)) && !isAuthenticated) {

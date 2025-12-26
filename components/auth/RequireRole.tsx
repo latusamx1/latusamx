@@ -68,6 +68,12 @@ export function RequireRole({ role, roles, children, fallback, redirect = false 
     )
   }
 
+  // ADMIN tiene acceso a todo - siempre permitir
+  const isAdmin = user.rol === Rol.ADMIN
+  if (isAdmin) {
+    return <>{children}</>
+  }
+
   // Verificar rol individual
   if (role && !isRole(role)) {
     if (redirect) {
@@ -140,6 +146,17 @@ export function RequireAdmin({ children, fallback }: { children: ReactNode; fall
 export function RequireHost({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
   return (
     <RequireRole role={Rol.HOST} fallback={fallback}>
+      {children}
+    </RequireRole>
+  )
+}
+
+/**
+ * Componente específico para contenido solo de Cliente
+ */
+export function RequireCliente({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
+  return (
+    <RequireRole role={Rol.CLIENTE} fallback={fallback}>
       {children}
     </RequireRole>
   )

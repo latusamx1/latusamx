@@ -11,18 +11,16 @@ import { Footer } from '@/components/layout/Footer'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Big Texas BBQ Josué | Sistema de Eventos y Reservas',
+  title: 'LATUSAMX | Sistema de Eventos y Reservas',
   description:
-    'Sistema completo para gestión de eventos, venta de tickets y reservas de mesa. La mejor experiencia BBQ en Valencia, Venezuela.',
+    'Sistema completo para gestión de eventos, venta de tickets y reservas de mesa. La mejor experiencia monterrey, méxico.',
   keywords: [
-    'bbq',
     'eventos',
     'tickets',
     'reservas',
     'restaurante',
-    'valencia',
-    'venezuela',
-    'big texas',
+    'monterrey',
+    'mexico',
   ],
 }
 
@@ -72,23 +70,19 @@ export default function Home() {
           <div className="max-w-4xl mx-auto text-center">
             {/* Logo/Brand */}
             <div className="inline-flex items-center gap-3 mb-6 bg-white/20 backdrop-blur-sm rounded-full px-6 py-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-red-600 to-red-700 text-white font-bold text-xl">
-                BT
+              <div className="flex w-fit h-fit p-2 items-center justify-center rounded-lg bg-linear-to-br from-red-600 to-red-700 text-white font-bold text-xl">
+                LATUSAMX
               </div>
-              <span className="font-bold text-2xl">
-                <span className="text-white">Big </span>
-                <span className="text-yellow-300">Texas</span>
-              </span>
             </div>
 
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               Sistema de Eventos y Reservas
               <br />
-              <span className="text-yellow-300">BBQ Josué</span>
+              <span className="text-yellow-300">LATUSAMX</span>
             </h1>
 
             <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto">
-              Compra tickets para eventos especiales, reserva tu mesa y disfruta de la mejor experiencia BBQ en Valencia
+              Compra tickets para eventos especiales, reserva tu mesa y disfruta de la mejor experiencia monterrey, méxico
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
