@@ -147,12 +147,12 @@ export function EventosCatalogo() {
             <div className="flex flex-col md:flex-row gap-2">
               <SearchBar onSearch={handleSearch} />
               <div className="flex gap-2">
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <Select value={selectedCategory || 'all'} onValueChange={(value) => setSelectedCategory(value === 'all' ? '' : value)}>
                   <SelectTrigger className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700">
                     <SelectValue placeholder="Todas las categorías" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todas las categorías</SelectItem>
+                    <SelectItem value="all">Todas las categorías</SelectItem>
                     <SelectItem value="concierto">Conciertos</SelectItem>
                     <SelectItem value="festival">Festivales</SelectItem>
                     <SelectItem value="deportivo">Deportes</SelectItem>
