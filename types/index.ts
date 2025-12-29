@@ -51,25 +51,29 @@ export interface TipoTicket {
 }
 
 export interface Evento {
-  id: string
+  id?: string
   titulo: string
   descripcion: string
   categoria: CategoriaEvento
-  fecha: Date
-  fechaFin?: Date
+  fecha: any // Firestore Timestamp
+  fechaFin?: any
   horaInicio: string
   horaFin?: string
   venueId: string
   venue?: Venue
   imagen?: string
+  imagenPortada?: string // URL de la imagen principal
   imagenPublicId?: string
-  tiposTickets: TipoTicket[]
-  estado: EstadoEvento
-  destacado: boolean
+  artistas?: string[] // Lista de artistas/performers
+  tiposTickets?: TipoTicket[]
+  estado?: EstadoEvento
+  status?: 'borrador' | 'publicado' | 'cancelado' // Alias para estado
+  destacado?: boolean
   tags?: string[]
-  createdBy: string
-  createdAt: Date
-  updatedAt: Date
+  precioMinimo?: number // Para ordenamiento
+  createdBy?: string
+  createdAt?: any
+  updatedAt?: any
 }
 
 export type EstadoOrden = 'pendiente' | 'pagada' | 'cancelada' | 'reembolsada'
