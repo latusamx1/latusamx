@@ -1,81 +1,64 @@
 /**
- * Detalle de evento - Página con SSR y Dynamic Metadata
+ * Detalle de evento - Página cliente
  * Basado en designs/screens/evento-detalle.html
  */
 
-import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useParams, notFound } from 'next/navigation'
 import { doc, getDoc } from 'firebase/firestore'
 import { db } from '@/lib/firebase/config'
 import { Evento } from '@/types'
 import { EventoDetalle } from './EventoDetalle'
 
-interface EventoPageProps {
-  params: {
-    id: string
-  }
-}
+export default function EventoPage() {
+  const params = useParams()
+  const [evento, setEvento] = useState<Evento | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
-// Generate metadata for SEO
-export async function generateMetadata({ params }: EventoPageProps): Promise<Metadata> {
-  try {
-    const eventoDoc = await getDoc(doc(db!, 'eventos', params.id))
+  useEffect(() => {
+    async function fetchEvento() {
+      if (!db || !params.id) {
+        setError(true)
+        setLoading(false)
+        return
+      }
 
-    if (!eventoDoc.exists()) {
-      return {
-        title: 'Evento no encontrado',
+      try {
+        const eventoDoc = await getDoc(doc(db, 'eventos', params.id as string))
+
+        if (!eventoDoc.exists()) {
+          setError(true)
+        } else {
+          setEvento({ id: eventoDoc.id, ...eventoDoc.data() } as Evento)
+        }
+      } catch (err) {
+        console.error('Error fetching evento:', err)
+        setError(true)
+      } finally {
+        setLoading(false)
       }
     }
 
-    const evento = { id: eventoDoc.id, ...eventoDoc.data() } as Evento
+    fetchEvento()
+  }, [params.id])
 
-    const formatFecha = (timestamp: any) => {
-      const date = timestamp?.toDate ? timestamp.toDate() : new Date(timestamp)
-      return new Intl.DateTimeFormat('es-ES', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      }).format(date)
-    }
-
-    return {
-      title: `${evento.titulo} - ${formatFecha(evento.fecha)} | LATUSAMX`,
-      description: evento.descripcion || `Compra tickets para ${evento.titulo}. ${formatFecha(evento.fecha)} en ${evento.venue?.nombre || 'Venue por confirmar'}`,
-      keywords: `${evento.titulo}, ${evento.categoria}, evento, tickets, boletos, ${evento.venue?.nombre || ''}`,
-      openGraph: {
-        title: evento.titulo,
-        description: evento.descripcion,
-        images: evento.imagenPortada ? [evento.imagenPortada] : [],
-        type: 'website',
-      },
-      twitter: {
-        card: 'summary_large_image',
-        title: evento.titulo,
-        description: evento.descripcion,
-        images: evento.imagenPortada ? [evento.imagenPortada] : [],
-      },
-    }
-  } catch (error) {
-    console.error('Error generating metadata:', error)
-    return {
-      title: 'Evento | LATUSAMX',
-    }
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Cargando evento...</p>
+        </div>
+      </div>
+    )
   }
-}
 
-export default async function EventoPage({ params }: EventoPageProps) {
-  try {
-    const eventoDoc = await getDoc(doc(db!, 'eventos', params.id))
-
-    if (!eventoDoc.exists()) {
-      notFound()
-    }
-
-    const evento = { id: eventoDoc.id, ...eventoDoc.data() } as Evento
-
-    return <EventoDetalle evento={evento} />
-  } catch (error) {
-    console.error('Error fetching evento:', error)
-    notFound()
+  if (error || !evento) {
+    return notFound()
   }
+
+  return <EventoDetalle evento={evento} />
 }

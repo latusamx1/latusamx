@@ -219,7 +219,7 @@ export function EventosCatalogo() {
           />
         )}
       </div>
-
+          
       <PublicFooter />
     </div>
   )
