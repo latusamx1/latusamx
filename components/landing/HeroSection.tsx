@@ -21,7 +21,7 @@ export function HeroSection() {
             Sistema completo para la venta de tickets y gestión de reservas de restaurantes
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="#eventos">
+            <a href="/eventos">
               <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 h-14 px-8 shadow-lg w-full sm:w-auto">
                 <Ticket className="w-5 h-5 mr-2" />
                 Ver Eventos

@@ -18,6 +18,7 @@ import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { useUserRole } from '@/lib/hooks/usePermissions'
 import { ROL_LABELS, ROL_COLORS } from '@/types/roles.types'
+import Link from 'next/link'
 
 interface DashboardHeaderProps {
   onMenuClick?: () => void
@@ -42,10 +43,19 @@ export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
 
         {/* Logo - Mobile */}
         <div className="flex items-center space-x-2 md:hidden">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-red-700 text-white font-bold text-sm">
-            BT
-          </div>
+          <Link href="/" className="flex items-center">
+            <div className="w-fit h-fit p-2 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-xl">LATUSAMX</span>
+            </div>
+          </Link>
         </div>
+
+        {/* Logo - Desktop */}
+        <Link href="/" className="flex items-center">
+          <div className="w-fit h-fit p-2 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-xl">LATUSAMX</span>
+          </div>
+        </Link>
 
         {/* Spacer */}
         <div className="flex-1" />
@@ -61,7 +71,7 @@ export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative w-fit h-fit p-2 rounded-full">
-              <div className="flex w-fit h-fit p-3 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white font-semibold">
+              <div className="flex w-fit h-fit px-3 py-2 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white font-semibold">
                 {userProfile?.nombre?.charAt(0).toUpperCase() || 'U'}
               </div>
             </Button>
