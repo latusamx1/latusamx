@@ -74,7 +74,7 @@ export default function CartActionsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md bg-white">
         <DialogHeader>
           <div className="flex items-center justify-center mb-4">
             <div className={`w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center ${config.iconColor}`}>

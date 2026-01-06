@@ -86,9 +86,9 @@ export default function CarritoCliente() {
                 item={item}
                 onUpdateQuantity={(cantidad) => {
                   updateQuantity(item.eventoId, item.tipoTicketId, cantidad)
-                  if (cantidad > 0) {
-                    openModal('update', item.eventoTitulo)
-                  }
+                  // if (cantidad > 0) {
+                  //   openModal('update', item.eventoTitulo)
+                  // }
                 }}
                 onRemove={(itemName) => handleRemoveItem(item.eventoId, item.tipoTicketId, itemName)}
                 formatPrice={formatPrice}
