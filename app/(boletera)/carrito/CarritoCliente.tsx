@@ -8,6 +8,8 @@ import CartBreadcrumb from './components/CartBreadcrumb'
 import CartItem from './components/CartItem'
 import CartSummary from './components/CartSummary'
 import EmptyCart from './components/EmptyCart'
+import CartActionsModal from './components/CartActionsModal'
+import { useCartModal } from './hooks/useCartModal'
 import { PublicHeader } from '@/components/landing/PublicHeader'
 import { PublicFooter } from '@/components/landing/PublicFooter'
 
@@ -23,6 +25,8 @@ export default function CarritoCliente() {
     aplicarDescuento,
     removerDescuento
   } = useCartStore()
+
+  const { isOpen, action, itemName, openModal, closeModal, setConfirmCallback, confirmCallback } = useCartModal()
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-MX', {
@@ -44,11 +48,12 @@ export default function CarritoCliente() {
     toast.success('Descuento removido')
   }
 
-  const handleRemoveItem = (eventoId: string, tipoTicketId: string) => {
-    if (confirm('¿Estás seguro de que quieres eliminar este ticket?')) {
+  const handleRemoveItem = (eventoId: string, tipoTicketId: string, itemName: string) => {
+    setConfirmCallback(() => {
       removeItem(eventoId, tipoTicketId)
       toast.info('Ticket eliminado del carrito')
-    }
+    })
+    openModal('remove', itemName)
   }
 
   // Si el carrito está vacío
@@ -79,8 +84,13 @@ export default function CarritoCliente() {
               <CartItem
                 key={`${item.eventoId}-${item.tipoTicketId}`}
                 item={item}
-                onUpdateQuantity={(cantidad) => updateQuantity(item.eventoId, item.tipoTicketId, cantidad)}
-                onRemove={() => handleRemoveItem(item.eventoId, item.tipoTicketId)}
+                onUpdateQuantity={(cantidad) => {
+                  updateQuantity(item.eventoId, item.tipoTicketId, cantidad)
+                  if (cantidad > 0) {
+                    openModal('update', item.eventoTitulo)
+                  }
+                }}
+                onRemove={(itemName) => handleRemoveItem(item.eventoId, item.tipoTicketId, itemName)}
                 formatPrice={formatPrice}
               />
             ))}
@@ -112,6 +122,15 @@ export default function CarritoCliente() {
       </div>
 
       <PublicFooter/>
+
+      {/* Cart Actions Modal */}
+      <CartActionsModal
+        isOpen={isOpen}
+        onClose={closeModal}
+        action={action}
+        itemName={itemName}
+        onConfirm={confirmCallback || undefined}
+      />
     </div>
   )
 }

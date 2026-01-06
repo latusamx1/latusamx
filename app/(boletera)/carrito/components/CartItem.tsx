@@ -10,7 +10,7 @@ import { CartItem as CartItemType } from '@/lib/stores/cartStore'
 interface CartItemProps {
   item: CartItemType
   onUpdateQuantity: (quantity: number) => void
-  onRemove: () => void
+  onRemove: (itemName: string) => void
   formatPrice: (price: number) => string
 }
 
@@ -82,7 +82,7 @@ export default function CartItem({ item, onUpdateQuantity, onRemove, formatPrice
 
           {/* Remove Button */}
           <button
-            onClick={onRemove}
+            onClick={() => onRemove(item.eventoTitulo)}
             className="text-red-600 hover:text-red-700 p-2 hover:bg-red-50 rounded transition-colors"
           >
             <Trash2 className="w-5 h-5" />

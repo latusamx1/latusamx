@@ -1,13 +1,13 @@
 import { Button } from '@/components/ui/button'
 import { ShoppingCart } from 'lucide-react'
 import Link from 'next/link'
-import CartNavbar from './CartNavbar'
-import CartFooter from './CartFooter'
+import { PublicHeader } from '@/components/landing/PublicHeader'
+import { PublicFooter } from '@/components/landing/PublicFooter'
 
 export default function EmptyCart() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <CartNavbar />
+    <div className="min-h-screen relative bg-gray-50">
+      <PublicHeader />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
@@ -24,7 +24,9 @@ export default function EmptyCart() {
         </div>
       </div>
 
-      <CartFooter />
+      <div className='md:absolute w-full bottom-0'>
+        <PublicFooter />
+      </div>
     </div>
   )
 }
