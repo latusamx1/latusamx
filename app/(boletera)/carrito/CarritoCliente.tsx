@@ -10,6 +10,8 @@ import CartItem from './components/CartItem'
 import CartSummary from './components/CartSummary'
 import EmptyCart from './components/EmptyCart'
 import CartFooter from './components/CartFooter'
+import { PublicHeader } from '@/components/landing/PublicHeader'
+import { PublicFooter } from '@/components/landing/PublicFooter'
 
 export default function CarritoCliente() {
   const {
@@ -25,9 +27,9 @@ export default function CarritoCliente() {
   } = useCartStore()
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('es-VE', {
+    return new Intl.NumberFormat('es-MX', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'MXN',
     }).format(price)
   }
 
@@ -65,7 +67,7 @@ export default function CarritoCliente() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <CartNavbar />
+      <PublicHeader/>
       <CartBreadcrumb />
 
       {/* Main Content */}
@@ -111,7 +113,7 @@ export default function CarritoCliente() {
         </div>
       </div>
 
-      <CartFooter />
+      <PublicFooter/>
     </div>
   )
 }
