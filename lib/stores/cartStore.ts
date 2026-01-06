@@ -18,15 +18,23 @@ export interface CartItem {
 
 interface CartStore {
   items: CartItem[]
+  codigoDescuento: string | null
+  descuentoAplicado: {
+    codigo: string
+    tipo: 'porcentaje' | 'monto'
+    valor: number
+  } | null
   // Actions
   addItem: (item: Omit<CartItem, 'cantidad'> & { cantidad?: number }) => void
   removeItem: (eventoId: string, tipoTicketId: string) => void
   updateQuantity: (eventoId: string, tipoTicketId: string, cantidad: number) => void
   clearCart: () => void
+  aplicarDescuento: (codigo: string, tipo: 'porcentaje' | 'monto', valor: number) => void
+  removerDescuento: () => void
   // Computed
   getTotalItems: () => number
   getSubtotal: () => number
-  getServiceFee: () => number
+  getDescuento: () => number
   getTotal: () => number
 }
 
@@ -34,6 +42,8 @@ export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
+      codigoDescuento: null,
+      descuentoAplicado: null,
 
       addItem: (item) => {
         const { items } = get()
@@ -76,7 +86,18 @@ export const useCartStore = create<CartStore>()(
       },
 
       clearCart: () => {
-        set({ items: [] })
+        set({ items: [], codigoDescuento: null, descuentoAplicado: null })
+      },
+
+      aplicarDescuento: (codigo, tipo, valor) => {
+        set({
+          codigoDescuento: codigo,
+          descuentoAplicado: { codigo, tipo, valor },
+        })
+      },
+
+      removerDescuento: () => {
+        set({ codigoDescuento: null, descuentoAplicado: null })
       },
 
       getTotalItems: () => {
@@ -87,13 +108,21 @@ export const useCartStore = create<CartStore>()(
         return get().items.reduce((sum, item) => sum + item.precio * item.cantidad, 0)
       },
 
-      getServiceFee: () => {
+      getDescuento: () => {
+        const { descuentoAplicado } = get()
+        if (!descuentoAplicado) return 0
+
         const subtotal = get().getSubtotal()
-        return subtotal * 0.1 // 10% cargo por servicio
+        if (descuentoAplicado.tipo === 'porcentaje') {
+          return (subtotal * descuentoAplicado.valor) / 100
+        }
+        return descuentoAplicado.valor
       },
 
       getTotal: () => {
-        return get().getSubtotal() + get().getServiceFee()
+        const subtotal = get().getSubtotal()
+        const descuento = get().getDescuento()
+        return Math.max(0, subtotal - descuento)
       },
     }),
     {
