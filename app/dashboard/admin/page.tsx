@@ -1,67 +1,105 @@
-import { Metadata } from 'next'
-import { RequireAdmin } from '@/components/auth/RequireRole'
-import { DashboardHeader } from '@/components/layout/DashboardHeader'
+'use client'
 
-export const metadata: Metadata = {
-  title: 'Dashboard Admin | Sistema',
-  description: 'Panel de administración del sistema',
-}
+import { useState } from 'react'
+import { RequireAdmin } from '@/components/auth/RequireRole'
+import { Menu, Search, Plus } from 'lucide-react'
+import DashboardSidebar from '@/components/dashboard/DashboardSidebar'
+import StatsCard from '@/components/dashboard/StatsCard'
+import NotificationBell from '@/components/dashboard/NotificationBell'
+import SalesChart from '@/components/dashboard/SalesChart'
+import TopEventsList from '@/components/dashboard/TopEventsList'
+import ActivityTable from '@/components/dashboard/ActivityTable'
+import { DollarSign, Ticket, CalendarCheck, Users } from 'lucide-react'
 
 export default function AdminDashboardPage() {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
   return (
     <RequireAdmin>
-      <div className="min-h-screen bg-gray-50">
-        <DashboardHeader />
-        <div className="p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard Administrativo</h1>
-            <p className="text-gray-600 mb-8">Bienvenido al panel de administración</p>
+      <div className="flex h-screen overflow-hidden">
+        {/* Sidebar */}
+        <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* KPI Cards */}
-              <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-red-900 mb-2">Eventos Activos</h3>
-                <p className="text-3xl font-bold text-red-600">0</p>
-                <p className="text-sm text-red-700 mt-2">Gestión completa de eventos</p>
-              </div>
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col lg:ml-64">
+          {/* Header */}
+          <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8">
+            {/* Mobile Menu Button */}
+            <button className="lg:hidden p-2" onClick={() => setSidebarOpen(true)}>
+              <Menu className="w-6 h-6" />
+            </button>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-blue-900 mb-2">Reservas Hoy</h3>
-                <p className="text-3xl font-bold text-blue-600">0</p>
-                <p className="text-sm text-blue-700 mt-2">Reservas programadas</p>
-              </div>
-
-              <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-green-900 mb-2">Usuarios</h3>
-                <p className="text-3xl font-bold text-green-600">0</p>
-                <p className="text-sm text-green-700 mt-2">Total registrados</p>
+            {/* Search */}
+            <div className="hidden md:block flex-1 max-w-md">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="search"
+                  placeholder="Buscar eventos, reservas..."
+                  className="w-full h-10 pl-10 pr-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
               </div>
             </div>
 
-            <div className="mt-8 bg-gray-50 rounded-lg p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Accesos Rápidos</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
-                  <p className="font-semibold text-gray-900">Eventos</p>
-                  <p className="text-sm text-gray-600">Gestionar eventos</p>
-                </div>
-                <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
-                  <p className="font-semibold text-gray-900">Reservas</p>
-                  <p className="text-sm text-gray-600">Ver reservas</p>
-                </div>
-                <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
-                  <p className="font-semibold text-gray-900">Usuarios</p>
-                  <p className="text-sm text-gray-600">Gestionar usuarios</p>
-                </div>
-                <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
-                  <p className="font-semibold text-gray-900">Reportes</p>
-                  <p className="text-sm text-gray-600">Ver estadísticas</p>
-                </div>
-              </div>
+            {/* Right Actions */}
+            <div className="flex items-center gap-4">
+              <NotificationBell count={3} />
+              <button className="hidden md:inline-flex items-center justify-center rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4">
+                <Plus className="w-4 h-4 mr-2" />
+                Crear Evento
+              </button>
             </div>
-          </div>
-        </div>
+          </header>
+
+          {/* Page Content */}
+          <main className="flex-1 overflow-y-auto p-4 lg:p-8 bg-gray-50">
+            {/* Page Title */}
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+              <p className="text-gray-600 mt-1">Bienvenido de nuevo, Juan</p>
+            </div>
+
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <StatsCard
+                title="Total Ventas"
+                value="$45,250"
+                icon={DollarSign}
+                iconColor="blue"
+                trend={{ value: '+12%', direction: 'up', label: 'vs mes anterior' }}
+              />
+              <StatsCard
+                title="Eventos Activos"
+                value="24"
+                icon={Ticket}
+                iconColor="purple"
+                subtitle="8 este mes"
+              />
+              <StatsCard
+                title="Reservas Hoy"
+                value="156"
+                icon={CalendarCheck}
+                iconColor="green"
+                trend={{ value: '-5%', direction: 'down', label: 'vs ayer' }}
+              />
+              <StatsCard
+                title="Clientes"
+                value="2,543"
+                icon={Users}
+                iconColor="amber"
+                trend={{ value: '+23%', direction: 'up', label: 'este mes' }}
+              />
+            </div>
+
+            {/* Charts Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <SalesChart />
+              <TopEventsList />
+            </div>
+
+            {/* Recent Activity */}
+            <ActivityTable />
+          </main>
         </div>
       </div>
     </RequireAdmin>
