@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard,
   Ticket,
@@ -14,6 +14,10 @@ import {
   Settings,
   LogOut,
 } from 'lucide-react'
+import { useState } from 'react'
+import { logout } from '@/lib/firebase/auth'
+import { useAuthStore } from '@/lib/stores/authStore'
+import { getInitials } from '@/lib/utils/userHelpers'
 import Avatar from './Avatar'
 
 interface SidebarProps {
@@ -49,6 +53,36 @@ const navigationSections = [
 
 export default function DashboardSidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname()
+  const router = useRouter()
+  const { userProfile, reset } = useAuthStore()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  const userName = userProfile?.nombre || 'Usuario'
+  const userRole = userProfile?.rol || 'cliente'
+  const initials = getInitials(userName)
+
+  // Mapeo de roles a español
+  const roleLabels: Record<string, string> = {
+    admin: 'Admin',
+    host: 'Host',
+    cliente: 'Cliente',
+  }
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return
+
+    try {
+      setIsLoggingOut(true)
+      await logout()
+      reset() // Limpiar estado de Zustand
+      router.push('/login')
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error)
+      alert('Error al cerrar sesión. Por favor intenta de nuevo.')
+    } finally {
+      setIsLoggingOut(false)
+    }
+  }
 
   return (
     <>
@@ -60,10 +94,10 @@ export default function DashboardSidebar({ isOpen, onClose }: SidebarProps) {
       >
         {/* Logo */}
         <div className="h-16 flex items-center px-6 border-b border-gray-200">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-lg">SG</span>
+          <div className="size-fit p-2 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-lg">LATUSAMX</span>
           </div>
-          <span className="ml-3 font-bold text-gray-900">Sistema de Gestión</span>
+
         </div>
 
         {/* Navigation */}
@@ -111,12 +145,17 @@ export default function DashboardSidebar({ isOpen, onClose }: SidebarProps) {
         {/* User Profile */}
         <div className="p-4 border-t border-gray-200">
           <div className="flex items-center gap-3">
-            <Avatar initials="JD" color="blue" size="md" />
+            <Avatar initials={initials} color="blue" size="md" />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">Juan Pérez</p>
-              <p className="text-xs text-gray-500 truncate">Admin</p>
+              <p className="text-sm font-medium text-gray-900 truncate">{userName}</p>
+              <p className="text-xs text-gray-500 truncate">{roleLabels[userRole]}</p>
             </div>
-            <button className="text-gray-400 hover:text-gray-600 transition-colors">
+            <button
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className="text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
+              title="Cerrar sesión"
+            >
               <LogOut className="w-5 h-5" />
             </button>
           </div>

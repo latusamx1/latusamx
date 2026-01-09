@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CRM BBQ Josué - Sistema de Boletería",
+  title: "CRM LATUSAMX - Sistema de Boletería",
   description: "Sistema completo para venta de tickets y gestión de eventos",
 };
 

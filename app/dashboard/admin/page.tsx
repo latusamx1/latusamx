@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { RequireAdmin } from '@/components/auth/RequireRole'
-import { Menu, Search, Plus } from 'lucide-react'
+import { useAuthStore } from '@/lib/stores/authStore'
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar'
+import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import StatsCard from '@/components/dashboard/StatsCard'
-import NotificationBell from '@/components/dashboard/NotificationBell'
 import SalesChart from '@/components/dashboard/SalesChart'
 import TopEventsList from '@/components/dashboard/TopEventsList'
 import ActivityTable from '@/components/dashboard/ActivityTable'
@@ -13,6 +14,34 @@ import { DollarSign, Ticket, CalendarCheck, Users } from 'lucide-react'
 
 export default function AdminDashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const router = useRouter()
+  const { userProfile, isLoading, isInitialized } = useAuthStore()
+
+  // Redirección si no hay usuario autenticado
+  useEffect(() => {
+    if (isInitialized && !isLoading && !userProfile) {
+      router.push('/login')
+    }
+  }, [isInitialized, isLoading, userProfile, router])
+
+  // Mostrar loading mientras se carga
+  if (isLoading || !isInitialized) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Si no hay perfil, no renderizar nada (la redirección ya se activó)
+  if (!userProfile) {
+    return null
+  }
+
+  const userName = userProfile.nombre || 'Usuario'
 
   return (
     <RequireAdmin>
@@ -23,40 +52,20 @@ export default function AdminDashboardPage() {
         {/* Main Content */}
         <div className="flex-1 flex flex-col lg:ml-64">
           {/* Header */}
-          <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8">
-            {/* Mobile Menu Button */}
-            <button className="lg:hidden p-2" onClick={() => setSidebarOpen(true)}>
-              <Menu className="w-6 h-6" />
-            </button>
-
-            {/* Search */}
-            <div className="hidden md:block flex-1 max-w-md">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="search"
-                  placeholder="Buscar eventos, reservas..."
-                  className="w-full h-10 pl-10 pr-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-
-            {/* Right Actions */}
-            <div className="flex items-center gap-4">
-              <NotificationBell count={3} />
-              <button className="hidden md:inline-flex items-center justify-center rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4">
-                <Plus className="w-4 h-4 mr-2" />
-                Crear Evento
-              </button>
-            </div>
-          </header>
+          <DashboardHeader
+            title="Dashboard"
+            subtitle={`Bienvenido de nuevo, ${userName}`}
+            showSearch={true}
+            showCreateButton={true}
+            onMenuClick={() => setSidebarOpen(true)}
+          />
 
           {/* Page Content */}
           <main className="flex-1 overflow-y-auto p-4 lg:p-8 bg-gray-50">
             {/* Page Title */}
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-              <p className="text-gray-600 mt-1">Bienvenido de nuevo, Juan</p>
+              <p className="text-gray-600 mt-1">Bienvenido de nuevo, {userName}</p>
             </div>
 
             {/* Stats Cards */}

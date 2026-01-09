@@ -1,52 +1,69 @@
 'use client'
 
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { RequireCliente } from '@/components/auth/RequireRole'
-import { Bell, Calendar, Ticket, DollarSign, Award, User, CreditCard, Shield, LogOut, Utensils } from 'lucide-react'
+import { useAuthStore } from '@/lib/stores/authStore'
+import { logout } from '@/lib/firebase/auth'
+import ClienteHeader from '@/components/dashboard/ClienteHeader'
 import WelcomeBanner from '@/components/dashboard/WelcomeBanner'
 import TicketsList from '@/components/dashboard/TicketsList'
 import ReservationsList from '@/components/dashboard/ReservationsList'
 import PointsCard from '@/components/dashboard/PointsCard'
 import QuickActionCard from '@/components/dashboard/QuickActionCard'
+import { Calendar, Ticket, DollarSign, Award, User, CreditCard, Shield, LogOut, Utensils, Bell } from 'lucide-react'
 
 export default function ClienteDashboardPage() {
+  const router = useRouter()
+  const { userProfile, isLoading, isInitialized, reset } = useAuthStore()
+
+  // Redirección si no hay usuario autenticado
+  useEffect(() => {
+    if (isInitialized && !isLoading && !userProfile) {
+      router.push('/login')
+    }
+  }, [isInitialized, isLoading, userProfile, router])
+
+  // Mostrar loading mientras se carga
+  if (isLoading || !isInitialized) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Si no hay perfil, no renderizar nada (la redirección ya se activó)
+  if (!userProfile) {
+    return null
+  }
+
+  const userName = userProfile.nombre || 'Usuario'
+  const firstName = userName.split(' ')[0] // Obtener solo el primer nombre
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+      reset()
+      router.push('/login')
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error)
+      alert('Error al cerrar sesión. Por favor intenta de nuevo.')
+    }
+  }
+
   return (
     <RequireCliente>
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
-        <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
-          <div className="max-w-7xl mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-gray-900">EventPro</h1>
-                  <p className="text-sm text-gray-500">Mi Cuenta</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <button className="relative p-2 hover:bg-gray-100 rounded-lg">
-                  <Bell className="w-5 h-5" />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-                </button>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-semibold">
-                    JP
-                  </div>
-                  <div className="hidden md:block">
-                    <p className="text-sm font-medium">Juan Pérez</p>
-                    <p className="text-xs text-gray-500">juan@ejemplo.com</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </header>
+        <ClienteHeader />
 
         <div className="max-w-7xl mx-auto px-4 py-6">
           {/* Welcome Banner */}
-          <WelcomeBanner userName="Juan" />
+          <WelcomeBanner userName={firstName} />
 
           {/* Quick Stats */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -140,7 +157,10 @@ export default function ClienteDashboardPage() {
                     <span className="text-sm text-gray-700">Privacidad</span>
                   </button>
                   <hr className="my-2" />
-                  <button className="w-full flex items-center gap-3 px-3 py-2 hover:bg-red-50 rounded-lg text-left text-red-600">
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-3 px-3 py-2 hover:bg-red-50 rounded-lg text-left text-red-600"
+                  >
                     <LogOut className="w-4 h-4" />
                     <span className="text-sm font-medium">Cerrar sesión</span>
                   </button>

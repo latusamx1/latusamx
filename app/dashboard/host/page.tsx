@@ -1,9 +1,10 @@
 'use client'
 
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { RequireHost } from '@/components/auth/RequireRole'
-import { Bell } from 'lucide-react'
-import Avatar from '@/components/dashboard/Avatar'
-import StatsCard from '@/components/dashboard/StatsCard'
+import { useAuthStore } from '@/lib/stores/authStore'
+import HostHeader from '@/components/dashboard/HostHeader'
 import QuickActions from '@/components/dashboard/QuickActions'
 import ActiveEventCard from '@/components/dashboard/ActiveEventCard'
 import UpcomingReservations from '@/components/dashboard/UpcomingReservations'
@@ -12,37 +13,38 @@ import CapacityIndicator from '@/components/dashboard/CapacityIndicator'
 import { CheckCircle, Users, CalendarCheck, Clock } from 'lucide-react'
 
 export default function HostDashboardPage() {
+  const router = useRouter()
+  const { userProfile, isLoading, isInitialized } = useAuthStore()
+
+  // Redirección si no hay usuario autenticado
+  useEffect(() => {
+    if (isInitialized && !isLoading && !userProfile) {
+      router.push('/login')
+    }
+  }, [isInitialized, isLoading, userProfile, router])
+
+  // Mostrar loading mientras se carga
+  if (isLoading || !isInitialized) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Si no hay perfil, no renderizar nada (la redirección ya se activó)
+  if (!userProfile) {
+    return null
+  }
+
   return (
     <RequireHost>
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
-        <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
-          <div className="px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <button className="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
-                  {/* Menu icon placeholder - could add mobile menu */}
-                </button>
-                <div>
-                  <h1 className="text-xl font-bold text-gray-900">Dashboard Host</h1>
-                  <p className="text-sm text-gray-500">EventPro Polanco</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <button className="relative p-2 hover:bg-gray-100 rounded-lg">
-                  <Bell className="w-5 h-5" />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-                </button>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
-                    MG
-                  </div>
-                  <span className="hidden md:block text-sm font-medium">María González</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </header>
+        <HostHeader />
 
         <div className="max-w-7xl mx-auto px-4 py-6">
           {/* Quick Actions */}
