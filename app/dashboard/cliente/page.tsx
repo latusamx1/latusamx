@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { RequireCliente } from '@/components/auth/RequireRole'
 import { useAuthStore } from '@/lib/stores/authStore'
@@ -15,33 +14,9 @@ import { Calendar, Ticket, DollarSign, Award, User, CreditCard, Shield, LogOut, 
 
 export default function ClienteDashboardPage() {
   const router = useRouter()
-  const { userProfile, isLoading, isInitialized, reset } = useAuthStore()
+  const { userProfile, reset } = useAuthStore()
 
-  // Redirección si no hay usuario autenticado
-  useEffect(() => {
-    if (isInitialized && !isLoading && !userProfile) {
-      router.push('/login')
-    }
-  }, [isInitialized, isLoading, userProfile, router])
-
-  // Mostrar loading mientras se carga
-  if (isLoading || !isInitialized) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando...</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Si no hay perfil, no renderizar nada (la redirección ya se activó)
-  if (!userProfile) {
-    return null
-  }
-
-  const userName = userProfile.nombre || 'Usuario'
+  const userName = userProfile?.nombre || 'Usuario'
   const firstName = userName.split(' ')[0] // Obtener solo el primer nombre
 
   const handleLogout = async () => {

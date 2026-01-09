@@ -1,9 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { RequireHost } from '@/components/auth/RequireRole'
-import { useAuthStore } from '@/lib/stores/authStore'
 import HostHeader from '@/components/dashboard/HostHeader'
 import QuickActions from '@/components/dashboard/QuickActions'
 import ActiveEventCard from '@/components/dashboard/ActiveEventCard'
@@ -13,33 +10,6 @@ import CapacityIndicator from '@/components/dashboard/CapacityIndicator'
 import { CheckCircle, Users, CalendarCheck, Clock } from 'lucide-react'
 
 export default function HostDashboardPage() {
-  const router = useRouter()
-  const { userProfile, isLoading, isInitialized } = useAuthStore()
-
-  // Redirección si no hay usuario autenticado
-  useEffect(() => {
-    if (isInitialized && !isLoading && !userProfile) {
-      router.push('/login')
-    }
-  }, [isInitialized, isLoading, userProfile, router])
-
-  // Mostrar loading mientras se carga
-  if (isLoading || !isInitialized) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando...</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Si no hay perfil, no renderizar nada (la redirección ya se activó)
-  if (!userProfile) {
-    return null
-  }
-
   return (
     <RequireHost>
       <div className="min-h-screen bg-gray-50">

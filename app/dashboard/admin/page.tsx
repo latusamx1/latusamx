@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { RequireAdmin } from '@/components/auth/RequireRole'
 import { useAuthStore } from '@/lib/stores/authStore'
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar'
@@ -14,34 +13,9 @@ import { DollarSign, Ticket, CalendarCheck, Users } from 'lucide-react'
 
 export default function AdminDashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const router = useRouter()
-  const { userProfile, isLoading, isInitialized } = useAuthStore()
+  const { userProfile } = useAuthStore()
 
-  // Redirección si no hay usuario autenticado
-  useEffect(() => {
-    if (isInitialized && !isLoading && !userProfile) {
-      router.push('/login')
-    }
-  }, [isInitialized, isLoading, userProfile, router])
-
-  // Mostrar loading mientras se carga
-  if (isLoading || !isInitialized) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando...</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Si no hay perfil, no renderizar nada (la redirección ya se activó)
-  if (!userProfile) {
-    return null
-  }
-
-  const userName = userProfile.nombre || 'Usuario'
+  const userName = userProfile?.nombre || 'Usuario'
 
   return (
     <RequireAdmin>
