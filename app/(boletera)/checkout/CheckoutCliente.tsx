@@ -109,21 +109,81 @@ export default function CheckoutCliente() {
     setIsSubmitting(true)
 
     try {
-      // Aquí irá la integración con Firestore para crear la orden
-      console.log('Datos del checkout:', data)
-      console.log('Items del carrito:', items)
-      console.log('Total:', total)
+      const { db } = await import('@/lib/firebase/config')
+      const { collection, addDoc, Timestamp } = await import('firebase/firestore')
+      const { useAuthStore } = await import('@/lib/stores/authStore')
 
-      // Simular procesamiento
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      const user = useAuthStore.getState().user
 
-      toast.success('¡Compra realizada con éxito!')
+      // Crear la orden en Firestore
+      const ordenData = {
+        userId: user?.uid || 'guest',
+        eventoId: items[0]?.eventoId || '',
+        items: items.map(item => ({
+          tipoTicketId: item.tipoTicketId,
+          nombre: item.tipoTicketNombre,
+          precio: item.precio,
+          cantidad: item.cantidad,
+          subtotal: item.precio * item.cantidad,
+        })),
+        subtotal,
+        descuento,
+        total,
+        codigoDescuento: null,
+        metodoPago: data.paymentMethod,
+        estado: 'pagada',
+        datosComprador: {
+          nombre: `${data.firstName} ${data.lastName}`,
+          email: data.email,
+          telefono: data.phone,
+        },
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+        pagadoAt: Timestamp.now(),
+      }
+
+      // Crear orden en Firestore
+      const ordenRef = await addDoc(collection(db!, 'ordenes'), ordenData)
+      console.log('Orden creada con ID:', ordenRef.id)
+
+      // Generar tickets individuales
+      const ticketsPromises = items.flatMap(item => {
+        return Array.from({ length: item.cantidad }).map(async (_, index) => {
+          const ticketData = {
+            ordenId: ordenRef.id,
+            eventoId: item.eventoId,
+            tipoTicketId: item.tipoTicketId,
+            tipoTicket: item.tipoTicketNombre,
+            precio: item.precio,
+            qrCode: `TICKET-${ordenRef.id}-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
+            usado: false,
+            createdAt: Timestamp.now(),
+          }
+          const ticketRef = await addDoc(collection(db!, 'tickets'), ticketData)
+          console.log('Ticket creado:', ticketRef.id)
+          return ticketRef
+        })
+      })
+
+      // Esperar a que se creen todos los tickets
+      await Promise.all(ticketsPromises)
+      console.log('Todos los tickets creados exitosamente')
+
+      // Limpiar carrito
       clearCart()
-      router.push('/confirmacion')
-    } catch (error) {
+
+      // Mostrar mensaje de éxito
+      toast.success('¡Compra realizada con éxito! Redirigiendo...')
+
+      // Pequeña espera para que el usuario vea el mensaje
+      await new Promise(resolve => setTimeout(resolve, 500))
+
+      // Redirigir a página de confirmación con el ID de la orden
+      console.log('Redirigiendo a confirmación con orden ID:', ordenRef.id)
+      router.push(`/confirmacion/${ordenRef.id}`)
+    } catch (error: any) {
       console.error('Error al procesar la compra:', error)
-      toast.error('Hubo un error al procesar tu compra. Intenta de nuevo.')
-    } finally {
+      toast.error(error?.message || 'Hubo un error al procesar tu compra. Intenta de nuevo.')
       setIsSubmitting(false)
     }
   }
