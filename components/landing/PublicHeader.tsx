@@ -20,6 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { ExitIcon } from '@radix-ui/react-icons'
 
 export function PublicHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -46,6 +47,9 @@ export function PublicHeader() {
           <div className="hidden md:flex items-center gap-6">
             <a href="/eventos" className="text-gray-600 hover:text-gray-900 transition-colors">
               Eventos
+            </a>
+            <a href="/cliente/tickets" className="text-gray-600 hover:text-gray-900 transition-colors">
+              Mis Eventos
             </a>
             <a href="#reservas" className="text-gray-600 hover:text-gray-900 transition-colors">
               Reservas
@@ -114,17 +118,24 @@ export function PublicHeader() {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-gray-200 bg-white">
-          <div className="px-4 py-3 space-y-3">
+          {userProfile ? (<div className="px-4 py-3 space-y-3">
             <a
-              href="#eventos"
+              href="/eventos"
               className="block text-gray-600 hover:text-gray-900"
               onClick={() => setMobileMenuOpen(false)}
             >
               Eventos
             </a>
             <a
-              href="#reservas"
+              href="/cliente/tickets"
               className="block text-gray-600 hover:text-gray-900"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Mis Eventos
+            </a>
+            <a
+              href="#reservas"
+              className=" hidden text-gray-600 hover:text-gray-900"
               onClick={() => setMobileMenuOpen(false)}
             >
               Reservas
@@ -136,17 +147,68 @@ export function PublicHeader() {
             >
               Características
             </a>
-            <Link
-              href="/login"
-              className="block text-gray-600 hover:text-gray-900"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Iniciar Sesión
-            </Link>
-            <Link href="/register" className="block">
-              <Button className="w-full">Comenzar</Button>
-            </Link>
-          </div>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className=' flex items-center justify-end gap-2 mt-2'>
+                  
+                  <div className="">
+                    <h2>{userProfile?.nombre}</h2>
+                    <h4>{userProfile?.email}</h4>
+
+                  </div>
+
+                  <Button variant="ghost" className="relative w-fit h-fit p-2 rounded-full">
+                    <div className="flex w-fit h-fit px-3 py-2 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white font-semibold">
+                      {userProfile?.nombre?.charAt(0).toUpperCase() || 'U'}
+                    </div>
+                  </Button>
+
+                </div>
+
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-screen bg-white" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">{userProfile?.nombre}</p>
+                    <p className="text-xs leading-none text-muted-foreground">{userProfile?.email}</p>
+                    {userRole && (
+                      <Badge variant="outline" className={ROL_COLORS[userRole]}>
+                        {ROL_LABELS[userRole]}
+                      </Badge>
+                    )}
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Mi Perfil</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Configuración</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Cerrar Sesión</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>) : (
+            <>
+              <Link
+                href="/login"
+                className="block text-gray-600 hover:text-gray-900"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Iniciar Sesión
+              </Link>
+              <Link href="/register" className="block">
+                <Button className="w-full">Comenzar</Button>
+              </Link>
+            </>
+          )}
         </div>
       )}
     </nav>
