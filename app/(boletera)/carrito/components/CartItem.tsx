@@ -1,11 +1,13 @@
 'use client'
 
 import { Card, CardContent } from '@/components/ui/card'
-import { Trash2, Plus, Minus, Calendar, Clock } from 'lucide-react'
+import { Trash2, Plus, Minus, Calendar, Clock, AlertTriangle } from 'lucide-react'
 import Image from 'next/image'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { CartItem as CartItemType } from '@/lib/stores/cartStore'
+import { useStockValidation } from '@/lib/hooks/useStockValidation'
+import { Badge } from '@/components/ui/badge'
 
 interface CartItemProps {
   item: CartItemType
@@ -15,8 +17,18 @@ interface CartItemProps {
 }
 
 export default function CartItem({ item, onUpdateQuantity, onRemove, formatPrice }: CartItemProps) {
+  // Validar stock en tiempo real
+  const { disponible, cantidadDisponible, mensaje, loading } = useStockValidation({
+    eventoId: item.eventoId,
+    tipoTicketId: item.tipoTicketId,
+    cantidadSolicitada: item.cantidad,
+    enabled: true
+  })
+
+  const stockInsuficiente = !loading && !disponible
+
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className={`hover:shadow-md transition-shadow ${stockInsuficiente ? 'border-red-300 bg-red-50' : ''}`}>
       <CardContent className="p-4">
         <div className="flex items-start gap-4">
           {/* Event Image */}
@@ -34,8 +46,24 @@ export default function CartItem({ item, onUpdateQuantity, onRemove, formatPrice
 
           {/* Ticket Details */}
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-gray-900 mb-1">{item.eventoTitulo}</h3>
+            <div className="flex items-start justify-between mb-1">
+              <h3 className="font-semibold text-gray-900">{item.eventoTitulo}</h3>
+              {stockInsuficiente && (
+                <Badge variant="destructive" className="ml-2">
+                  <AlertTriangle className="w-3 h-3 mr-1" />
+                  Stock insuficiente
+                </Badge>
+              )}
+            </div>
             <p className="text-sm text-gray-600 mb-1">{item.tipoTicketNombre}</p>
+
+            {/* Advertencia de stock */}
+            {stockInsuficiente && (
+              <div className="mb-2 p-2 bg-red-100 border border-red-300 rounded text-sm text-red-800">
+                <AlertTriangle className="w-4 h-4 inline mr-1" />
+                {mensaje || `Solo hay ${cantidadDisponible} disponibles`}
+              </div>
+            )}
             <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
               <Calendar className="w-4 h-4" />
               <span>
@@ -52,17 +80,29 @@ export default function CartItem({ item, onUpdateQuantity, onRemove, formatPrice
               {/* Quantity Selector */}
               <div className="flex items-center border border-gray-300 rounded">
                 <button
-                  className="px-3 py-1.5 hover:bg-gray-100 transition-colors"
+                  className="px-3 py-1.5 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={() => onUpdateQuantity(item.cantidad - 1)}
+                  disabled={loading}
                 >
                   <Minus className="w-4 h-4" />
                 </button>
                 <span className="px-4 py-1.5 border-x border-gray-300 font-medium">
                   {item.cantidad}
+                  {!loading && cantidadDisponible > 0 && (
+                    <span className="text-xs text-gray-500 ml-1">
+                      / {cantidadDisponible}
+                    </span>
+                  )}
                 </span>
                 <button
-                  className="px-3 py-1.5 hover:bg-gray-100 transition-colors"
+                  className="px-3 py-1.5 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={() => onUpdateQuantity(item.cantidad + 1)}
+                  disabled={loading || item.cantidad >= cantidadDisponible}
+                  title={
+                    item.cantidad >= cantidadDisponible
+                      ? `Máximo ${cantidadDisponible} disponibles`
+                      : ''
+                  }
                 >
                   <Plus className="w-4 h-4" />
                 </button>
