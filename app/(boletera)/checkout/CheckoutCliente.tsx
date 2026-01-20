@@ -112,10 +112,68 @@ export default function CheckoutCliente() {
       const { db } = await import('@/lib/firebase/config')
       const { collection, addDoc, Timestamp } = await import('firebase/firestore')
       const { useAuthStore } = await import('@/lib/stores/authStore')
+      const { inventarioService } = await import('@/lib/services/inventario.service')
 
       const user = useAuthStore.getState().user
 
-      // Crear la orden en Firestore
+      // PASO 1: Verificar disponibilidad de TODOS los tickets antes de proceder
+      console.log('🔍 Verificando disponibilidad de stock...')
+      for (const item of items) {
+        const verificacion = await inventarioService.verificarDisponibilidad(
+          item.eventoId,
+          item.tipoTicketId,
+          item.cantidad
+        )
+
+        if (!verificacion.disponible) {
+          toast.error(
+            `${item.tipoTicketNombre}: ${verificacion.mensaje || 'Stock insuficiente'}`
+          )
+          setIsSubmitting(false)
+          return
+        }
+      }
+
+      console.log('✅ Stock disponible para todos los tickets')
+
+      // PASO 2: Confirmar compra y decrementar stock ATÓMICAMENTE
+      const resultadosStock = await Promise.all(
+        items.map(item =>
+          inventarioService.confirmarCompra(
+            item.eventoId,
+            item.tipoTicketId,
+            item.cantidad
+          )
+        )
+      )
+
+      // Verificar que todas las actualizaciones de stock fueron exitosas
+      const falloStock = resultadosStock.find(r => !r.success)
+      if (falloStock) {
+        console.error('❌ Error al actualizar stock:', falloStock.error)
+
+        // Revertir las actualizaciones exitosas (rollback manual)
+        const revertPromises = items.map((item, index) => {
+          if (resultadosStock[index].success) {
+            return inventarioService.revertirCompra(
+              item.eventoId,
+              item.tipoTicketId,
+              item.cantidad
+            )
+          }
+        })
+        await Promise.all(revertPromises)
+
+        toast.error(
+          falloStock.error || 'Error al actualizar el inventario. Intenta nuevamente.'
+        )
+        setIsSubmitting(false)
+        return
+      }
+
+      console.log('✅ Stock actualizado correctamente')
+
+      // PASO 3: Crear la orden en Firestore
       const ordenData = {
         userId: user?.uid || 'guest',
         eventoId: items[0]?.eventoId || '',
@@ -142,11 +200,10 @@ export default function CheckoutCliente() {
         pagadoAt: Timestamp.now(),
       }
 
-      // Crear orden en Firestore
       const ordenRef = await addDoc(collection(db!, 'ordenes'), ordenData)
-      console.log('Orden creada con ID:', ordenRef.id)
+      console.log('✅ Orden creada con ID:', ordenRef.id)
 
-      // Generar tickets individuales
+      // PASO 4: Generar tickets individuales
       const ticketsPromises = items.flatMap(item => {
         return Array.from({ length: item.cantidad }).map(async (_, index) => {
           const ticketData = {
@@ -155,34 +212,30 @@ export default function CheckoutCliente() {
             tipoTicketId: item.tipoTicketId,
             tipoTicket: item.tipoTicketNombre,
             precio: item.precio,
+            userId: user?.uid || 'guest',
             qrCode: `TICKET-${ordenRef.id}-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
             usado: false,
             createdAt: Timestamp.now(),
           }
           const ticketRef = await addDoc(collection(db!, 'tickets'), ticketData)
-          console.log('Ticket creado:', ticketRef.id)
+          console.log('🎫 Ticket creado:', ticketRef.id)
           return ticketRef
         })
       })
 
-      // Esperar a que se creen todos los tickets
       await Promise.all(ticketsPromises)
-      console.log('Todos los tickets creados exitosamente')
+      console.log('✅ Todos los tickets creados exitosamente')
 
-      // Limpiar carrito
+      // PASO 5: Limpiar carrito
       clearCart()
 
-      // Mostrar mensaje de éxito
+      // PASO 6: Éxito
       toast.success('¡Compra realizada con éxito! Redirigiendo...')
-
-      // Pequeña espera para que el usuario vea el mensaje
       await new Promise(resolve => setTimeout(resolve, 500))
 
-      // Redirigir a página de confirmación con el ID de la orden
-      console.log('Redirigiendo a confirmación con orden ID:', ordenRef.id)
       router.push(`/confirmacion/${ordenRef.id}`)
     } catch (error: any) {
-      console.error('Error al procesar la compra:', error)
+      console.error('❌ Error al procesar la compra:', error)
       toast.error(error?.message || 'Hubo un error al procesar tu compra. Intenta de nuevo.')
       setIsSubmitting(false)
     }
