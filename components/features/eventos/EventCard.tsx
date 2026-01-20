@@ -11,6 +11,7 @@ import { Calendar, MapPin, Users } from 'lucide-react'
 import { Evento } from '@/types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { StockBadge } from './StockIndicator'
 
 interface EventCardProps {
   evento: Evento
@@ -44,21 +45,10 @@ export function EventCard({ evento, featured = false }: EventCardProps) {
     }).format(precio)
   }
 
-  const getDisponibilidad = () => {
-    const total = evento.tiposTickets?.reduce((sum, t) => sum + t.cantidad, 0) || 0
-    const vendidos = evento.tiposTickets?.reduce((sum, t) => sum + (t.cantidad - t.disponibles), 0) || 0
-    const disponibles = total - vendidos
-    const porcentaje = total > 0 ? (vendidos / total) * 100 : 0
-
-    if (porcentaje >= 95) return { label: 'SOLD OUT', color: 'bg-red-500' }
-    if (porcentaje >= 80) return { label: 'CASI AGOTADO', color: 'bg-orange-500' }
-    return { label: 'Disponible', color: 'bg-green-500' }
-  }
-
-  const disponibilidad = getDisponibilidad()
   const precioDesde = Math.min(...(evento.tiposTickets?.map((t) => t.precio) || [0]))
-  const totalVendidos = evento.tiposTickets?.reduce((sum, t) => sum + (t.cantidad - t.disponibles), 0) || 0
+  const totalDisponibles = evento.tiposTickets?.reduce((sum, t) => sum + t.disponibles, 0) || 0
   const totalTickets = evento.tiposTickets?.reduce((sum, t) => sum + t.cantidad, 0) || 0
+  const totalVendidos = totalTickets - totalDisponibles
 
   if (featured) {
     // Card destacado (horizontal grande)
@@ -82,13 +72,9 @@ export function EventCard({ evento, featured = false }: EventCardProps) {
                   DESTACADO
                 </span>
               </div>
-              {(disponibilidad.color === 'bg-orange-500' || disponibilidad.color === 'bg-red-500') && (
-                <div className="absolute top-4 right-4">
-                  <span className={`px-3 py-1 ${disponibilidad.color} text-white text-xs font-bold rounded-full`}>
-                    {disponibilidad.label}
-                  </span>
-                </div>
-              )}
+              <div className="absolute top-4 right-4">
+                <StockBadge disponibles={totalDisponibles} total={totalTickets} />
+              </div>
             </div>
             <div className="md:w-1/2 p-6">
               <div className="flex items-start justify-between mb-3">
@@ -146,9 +132,7 @@ export function EventCard({ evento, featured = false }: EventCardProps) {
             <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600"></div>
           )}
           <div className="absolute top-3 right-3">
-            <span className={`px-2 py-1 ${disponibilidad.color} text-white text-xs font-bold rounded`}>
-              {disponibilidad.label}
-            </span>
+            <StockBadge disponibles={totalDisponibles} total={totalTickets} />
           </div>
         </div>
         <div className="p-4">

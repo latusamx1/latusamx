@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { TipoTicket } from '@/types'
 import { Badge } from '@/components/ui/badge'
+import { StockIndicator } from './StockIndicator'
 
 interface TicketSelectorProps {
   tickets: TipoTicket[]
@@ -125,6 +126,16 @@ export function TicketSelector({ tickets, onAddToCart }: TicketSelectorProps) {
                   <p className="text-2xl font-bold text-gray-900">{formatPrecio(ticket.precio)}</p>
                 </div>
               </div>
+              {/* Indicador de stock completo */}
+              <div className="mt-3 mb-2">
+                <StockIndicator
+                  disponibles={ticket.disponibles}
+                  total={ticket.cantidad}
+                  size="sm"
+                  showMessage={false}
+                />
+              </div>
+
               <div className="flex items-center justify-between text-sm">
                 <span className={`flex items-center gap-1 ${disponibilidad.color}`}>
                   {disponibilidad.icon}
