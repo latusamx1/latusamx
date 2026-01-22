@@ -97,20 +97,20 @@ export function StockBadge({ disponibles, total }: { disponibles: number; total:
       className="gap-1"
     >
       {agotado ? (
-        <>
-          <XCircle className="w-3 h-3" />
-          Agotado
-        </>
+        <div className="flex items-center gap-1">
+          <XCircle className="w-3 h-3 text-white" />
+          <p className='text-white'>Agotado</p>
+        </div>
       ) : pocosDisponibles ? (
-        <>
-          <AlertCircle className="w-3 h-3" />
-          ¡Solo {disponibles}!
-        </>
+        <div className="flex items-center gap-1">
+          <AlertCircle className="w-3 h-3 text-white" />
+          <p className='text-white'>¡Solo {disponibles} disponibles!</p>
+        </div>
       ) : (
-        <>
-          <CheckCircle className="w-3 h-3" />
-          {disponibles} disponibles
-        </>
+        <div className="flex items-center gap-1">
+          <CheckCircle className="w-3 h-3 text-white" />
+          <p className='text-white'>{disponibles} disponibles</p>
+        </div>
       )}
     </Badge>
   )

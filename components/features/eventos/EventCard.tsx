@@ -56,7 +56,7 @@ export function EventCard({ evento, featured = false }: EventCardProps) {
       <Link href={`/eventos/${evento.id}`}>
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition cursor-pointer">
           <div className="flex flex-col md:flex-row">
-            <div className="relative md:w-1/2 h-64 md:h-auto">
+            <div className="relative md:w-1/2 h-56 sm:h-64 md:h-auto md:min-h-100">
               {evento.imagenPortada ? (
                 <Image
                   src={evento.imagenPortada}
@@ -65,22 +65,22 @@ export function EventCard({ evento, featured = false }: EventCardProps) {
                   className="object-cover"
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600"></div>
+                <div className="w-full h-full bg-linear-to-br from-blue-500 to-purple-600"></div>
               )}
-              <div className="absolute top-4 left-4">
-                <span className="px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
+              <div className="absolute top-3 left-3 sm:top-4 sm:left-4">
+                <span className="px-2 py-1 sm:px-3 sm:py-1 bg-red-500 text-white text-xs font-bold rounded-full">
                   DESTACADO
                 </span>
               </div>
-              <div className="absolute top-4 right-4">
+              <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
                 <StockBadge disponibles={totalDisponibles} total={totalTickets} />
               </div>
             </div>
-            <div className="md:w-1/2 p-6">
+            <div className="md:w-1/2 p-4 sm:p-6">
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <Badge className="mb-2">{evento.categoria}</Badge>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">{evento.titulo}</h3>
+                  <Badge className="mb-2 text-xs sm:text-sm">{evento.categoria}</Badge>
+                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">{evento.titulo}</h3>
                 </div>
               </div>
               <div className="space-y-2 mb-4">
@@ -104,10 +104,10 @@ export function EventCard({ evento, featured = false }: EventCardProps) {
               <p className="text-gray-600 mb-4 line-clamp-2">{evento.descripcion}</p>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-500">Desde</p>
-                  <p className="text-2xl font-bold text-gray-900">{formatPrecio(precioDesde)}</p>
+                  <p className="text-xs sm:text-sm text-gray-500">Desde</p>
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900">{formatPrecio(precioDesde)}</p>
                 </div>
-                <Button className="px-6 py-3">Comprar Tickets</Button>
+                <Button className="px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base">Comprar Tickets</Button>
               </div>
             </div>
           </div>
@@ -120,7 +120,7 @@ export function EventCard({ evento, featured = false }: EventCardProps) {
   return (
     <Link href={`/eventos/${evento.id}`}>
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition cursor-pointer">
-        <div className="relative h-48">
+        <div className="relative h-44 sm:h-48 md:h-56">
           {evento.imagenPortada ? (
             <Image
               src={evento.imagenPortada}
@@ -129,15 +129,15 @@ export function EventCard({ evento, featured = false }: EventCardProps) {
               className="object-cover"
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600"></div>
+            <div className="w-full h-full bg-linear-to-br from-blue-500 to-purple-600"></div>
           )}
-          <div className="absolute top-3 right-3">
+          <div className="absolute top-2 right-2 sm:top-3 sm:right-3">
             <StockBadge disponibles={totalDisponibles} total={totalTickets} />
           </div>
         </div>
-        <div className="p-4">
-          <Badge className="mb-2">{evento.categoria}</Badge>
-          <h3 className="font-bold text-gray-900 mb-2 line-clamp-1">{evento.titulo}</h3>
+        <div className="p-3 sm:p-4">
+          <Badge className="mb-2 text-xs">{evento.categoria}</Badge>
+          <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-2 line-clamp-1">{evento.titulo}</h3>
           <div className="space-y-1 mb-3 text-sm text-gray-600">
             <div className="flex items-center gap-2">
               <Calendar className="w-3 h-3" />
@@ -148,12 +148,12 @@ export function EventCard({ evento, featured = false }: EventCardProps) {
               <span className="line-clamp-1">{evento.venue?.nombre || 'Por confirmar'}</span>
             </div>
           </div>
-          <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+          <div className="flex items-center justify-between pt-2 sm:pt-3 border-t border-gray-200">
             <div>
               <p className="text-xs text-gray-500">Desde</p>
-              <p className="text-lg font-bold text-gray-900">{formatPrecio(precioDesde)}</p>
+              <p className="text-base sm:text-lg font-bold text-gray-900">{formatPrecio(precioDesde)}</p>
             </div>
-            <Button size="sm">Ver más</Button>
+            <Button size="sm" className="text-xs sm:text-sm">Ver más</Button>
           </div>
         </div>
       </div>
