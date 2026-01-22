@@ -25,32 +25,6 @@ interface SidebarProps {
   onClose: () => void
 }
 
-const navigationSections = [
-  {
-    title: 'Principal',
-    items: [
-      { icon: LayoutDashboard, label: 'Dashboard', href: '/admin' },
-    ],
-  },
-  {
-    title: 'Eventos',
-    items: [
-      { icon: Ticket, label: 'Mis Eventos', href: '/eventos' },
-      { icon: PlusCircle, label: 'Crear Evento', href: '/eventos/crear' },
-      { icon: MapPin, label: 'Venues', href: '/venues' },
-      { icon: Percent, label: 'Códigos', href: '/codigos' },
-    ],
-  },
-  {
-    title: 'Reservas',
-    items: [
-      { icon: CalendarCheck, label: 'Reservas', href: '/reservas' },
-      { icon: LayoutIcon, label: 'Planos', href: '/planos' },
-      { icon: Building, label: 'Sucursales', href: '/sucursales' },
-    ],
-  },
-]
-
 export default function DashboardSidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
@@ -60,6 +34,57 @@ export default function DashboardSidebar({ isOpen, onClose }: SidebarProps) {
   const userName = userProfile?.nombre || 'Usuario'
   const userRole = userProfile?.rol || 'cliente'
   const initials = getInitials(userName)
+
+  // Secciones de navegación según el rol
+  const navigationSections = userRole === 'admin'
+    ? [
+        {
+          title: 'Principal',
+          items: [
+            { icon: LayoutDashboard, label: 'Dashboard', href: '/admin' },
+          ],
+        },
+        {
+          title: 'Eventos',
+          items: [
+            { icon: Ticket, label: 'Eventos', href: '/admin/eventos' },
+            { icon: PlusCircle, label: 'Crear Evento', href: '/admin/eventos/crear' },
+            { icon: MapPin, label: 'Venues', href: '/admin/venues' },
+            { icon: Percent, label: 'Códigos', href: '/admin/codigos' },
+          ],
+        },
+        {
+          title: 'Reservas',
+          items: [
+            { icon: CalendarCheck, label: 'Reservas', href: '/admin/reservas' },
+            { icon: LayoutIcon, label: 'Planos', href: '/admin/planos' },
+            { icon: Building, label: 'Sucursales', href: '/admin/sucursales' },
+          ],
+        },
+      ]
+    : [ // Host
+        {
+          title: 'Principal',
+          items: [
+            { icon: LayoutDashboard, label: 'Dashboard', href: '/host' },
+          ],
+        },
+        {
+          title: 'Operaciones',
+          items: [
+            { icon: Ticket, label: 'Validar Tickets', href: '/host/scanner' },
+            { icon: CalendarCheck, label: 'Check-in', href: '/host/checkin' },
+            { icon: LayoutIcon, label: 'Plano Mesas', href: '/host/plano' },
+          ],
+        },
+        {
+          title: 'Gestión',
+          items: [
+            { icon: Building, label: 'Lista de Espera', href: '/host/lista-espera' },
+            { icon: PlusCircle, label: 'Buscar', href: '/host/buscar' },
+          ],
+        },
+      ]
 
   // Mapeo de roles a español
   const roleLabels: Record<string, string> = {
@@ -88,20 +113,20 @@ export default function DashboardSidebar({ isOpen, onClose }: SidebarProps) {
     <>
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 lg:translate-x-0 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed inset-y-0 left-0 z-50 w-64 sm:w-72 lg:w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
       >
         {/* Logo */}
-        <div className="h-16 flex items-center px-6 border-b border-gray-200">
-          <div className="size-fit p-2 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-lg">LATUSAMX</span>
-          </div>
-
+        <div className="h-14 sm:h-16 flex items-center px-4 sm:px-6 border-b border-gray-200">
+          <Link href="/" className="flex items-center">
+            <div className="w-fit h-fit p-1.5 sm:p-2 bg-linear-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-lg sm:text-xl">LATUSAMX</span>
+            </div>
+          </Link>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto h-[calc(100vh-8rem)]">
+        <nav className="flex-1 px-3 sm:px-4 py-4 sm:py-6 space-y-1 sm:space-y-2 overflow-y-auto h-[calc(100vh-7rem)] sm:h-[calc(100vh-8rem)]">
           {navigationSections.map((section) => (
             <div key={section.title} className="pt-4 first:pt-0">
               {section.title !== 'Principal' && (
@@ -116,11 +141,10 @@ export default function DashboardSidebar({ isOpen, onClose }: SidebarProps) {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                      isActive
+                    className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors ${isActive
                         ? 'bg-blue-50 text-blue-600'
                         : 'text-gray-700 hover:bg-gray-100'
-                    }`}
+                      }`}
                   >
                     <Icon className="w-5 h-5" />
                     {item.label}

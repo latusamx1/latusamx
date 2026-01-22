@@ -11,7 +11,7 @@ import TopEventsList from '@/components/dashboard/TopEventsList'
 import ActivityTable from '@/components/dashboard/ActivityTable'
 import { DollarSign, Ticket, CalendarCheck, Users } from 'lucide-react'
 import { db } from '@/lib/firebase/config'
-import { collection, query, orderBy, limit, getDocs, where, Timestamp, getCountFromServer } from 'firebase/firestore'
+import { collection, query, orderBy, limit, getDocs, where, Timestamp, getCountFromServer, doc, getDoc } from 'firebase/firestore'
 import { Orden } from '@/types'
 
 interface DashboardStats {
@@ -31,6 +31,8 @@ interface TopEvent {
   ticketsSold: number
   revenue: string
   gradient: string
+  fecha?: string
+  venue?: string
 }
 
 interface Activity {
@@ -57,6 +59,7 @@ export default function AdminDashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [topEvents, setTopEvents] = useState<TopEvent[]>([])
   const [activities, setActivities] = useState<Activity[]>([])
+  const [salesData, setSalesData] = useState<Array<{ day: string; value: number }>>([])
   const [loading, setLoading] = useState(true)
 
   const userName = userProfile?.nombre || 'Usuario'
@@ -84,10 +87,37 @@ export default function AdminDashboardPage() {
           limit(100)
         )
         const ordenesMesSnapshot = await getDocs(ordenesMesQuery)
-        const ordenesMes = ordenesMesSnapshot.docs.map(doc => ({
+        const ordenesMesRaw = ordenesMesSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         })) as Orden[]
+
+        // Enriquecer órdenes con datos completos de eventos
+        const eventosCache = new Map()
+        const ordenesMes = await Promise.all(
+          ordenesMesRaw.map(async (orden) => {
+            if (orden.eventoId && !orden.evento?.titulo) {
+              // Si no tenemos los datos del evento, buscarlos
+              if (!eventosCache.has(orden.eventoId)) {
+                try {
+                  const eventoDocRef = doc(db!, 'eventos', orden.eventoId)
+                  const eventoSnapshot = await getDoc(eventoDocRef)
+                  if (eventoSnapshot.exists()) {
+                    const eventoData = { id: eventoSnapshot.id, ...eventoSnapshot.data() }
+                    eventosCache.set(orden.eventoId, eventoData)
+                  }
+                } catch (error) {
+                  console.error('Error fetching evento:', error)
+                }
+              }
+              const eventoData = eventosCache.get(orden.eventoId)
+              if (eventoData) {
+                return { ...orden, evento: eventoData }
+              }
+            }
+            return orden
+          })
+        )
 
         // 2. Calcular ventas del mes
         const ventasMesActual = ordenesMes
@@ -161,11 +191,22 @@ export default function AdminDashboardPage() {
             const ingresos = orden.total
 
             if (!acc[eventoId]) {
+              // Guardar info completa del evento
+              const eventoFecha = orden.evento?.fecha instanceof Date
+                ? orden.evento.fecha
+                : (orden.evento?.fecha?.toDate ? orden.evento.fecha.toDate() : null)
+
               acc[eventoId] = {
                 id: eventoId,
                 name: eventoTitulo,
                 ticketsSold: 0,
-                revenue: 0
+                revenue: 0,
+                fecha: eventoFecha ? eventoFecha.toLocaleDateString('es-MX', {
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric'
+                }) : undefined,
+                venue: orden.evento?.venue?.nombre
               }
             }
 
@@ -173,7 +214,7 @@ export default function AdminDashboardPage() {
             acc[eventoId].revenue += ingresos
 
             return acc
-          }, {} as Record<string, { id: string; name: string; ticketsSold: number; revenue: number }>)
+          }, {} as Record<string, { id: string; name: string; ticketsSold: number; revenue: number; fecha?: string; venue?: string }>)
 
         const topEventsData: TopEvent[] = Object.values(eventosConVentas)
           .sort((a, b) => b.revenue - a.revenue)
@@ -183,10 +224,42 @@ export default function AdminDashboardPage() {
             name: event.name,
             ticketsSold: event.ticketsSold,
             revenue: `$${event.revenue.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`,
-            gradient: gradients[index % gradients.length]
+            gradient: gradients[index % gradients.length],
+            fecha: event.fecha,
+            venue: event.venue
           }))
 
-        // 8. Actividades recientes (últimas 3 órdenes)
+        // 8. Calcular ventas por día (últimos 7 días)
+        const hoy = new Date()
+        const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+        const ventasPorDia = []
+
+        for (let i = 6; i >= 0; i--) {
+          const fecha = new Date(hoy)
+          fecha.setDate(fecha.getDate() - i)
+          fecha.setHours(0, 0, 0, 0)
+
+          const inicioDia = Timestamp.fromDate(fecha)
+          const finDia = Timestamp.fromDate(new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate(), 23, 59, 59))
+
+          const ventasDia = ordenesMes
+            .filter(o => {
+              const ordenFecha = o.createdAt instanceof Date
+                ? Timestamp.fromDate(o.createdAt)
+                : o.createdAt
+              return o.estado === 'pagada' &&
+                     ordenFecha.seconds >= inicioDia.seconds &&
+                     ordenFecha.seconds <= finDia.seconds
+            })
+            .reduce((sum, o) => sum + o.total, 0)
+
+          ventasPorDia.push({
+            day: diasSemana[fecha.getDay()],
+            value: ventasDia
+          })
+        }
+
+        // 9. Actividades recientes (últimas 3 órdenes)
         const actividadesData: Activity[] = ordenesMes.slice(0, 3).map(orden => {
           const fecha = orden.createdAt instanceof Date
             ? orden.createdAt
@@ -205,14 +278,21 @@ export default function AdminDashboardPage() {
             timestamp = fecha.toLocaleDateString('es-MX')
           }
 
+          // Construir descripción detallada
+          const eventoTitulo = orden.evento?.titulo || 'Evento'
+          const ticketNombre = orden.items[0]?.nombre || 'Ticket'
+          const cantidadTickets = orden.items.reduce((sum, item) => sum + item.cantidad, 0)
+          const clienteNombre = orden.datosComprador?.nombre || 'Cliente'
+
           return {
             id: orden.id,
             type: 'ticket' as const,
             title: 'Venta de ticket',
-            description: `${orden.evento?.titulo || 'Evento'} - ${orden.items[0]?.nombre || 'Ticket'}`,
+            description: `${eventoTitulo} - ${ticketNombre} (x${cantidadTickets})`,
             timestamp,
             amount: `$${orden.total.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`,
-            status: orden.estado === 'pagada' ? 'Completado' : 'Borrador'
+            status: orden.estado === 'pagada' ? 'Completado' : 'Borrador',
+            cliente: clienteNombre
           }
         })
 
@@ -246,6 +326,8 @@ export default function AdminDashboardPage() {
             status: 'Borrador'
           }
         ])
+
+        setSalesData(ventasPorDia)
 
       } catch (error) {
         console.error('Error fetching dashboard data:', error)
@@ -287,15 +369,15 @@ export default function AdminDashboardPage() {
           />
 
           {/* Page Content */}
-          <main className="flex-1 overflow-y-auto p-4 lg:p-8 bg-gray-50">
+          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-gray-50">
             {/* Page Title */}
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-              <p className="text-gray-600 mt-1">Bienvenido de nuevo, {userName}</p>
+            <div className="mb-6 md:mb-8">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
+              <p className="text-sm sm:text-base text-gray-600 mt-1">Bienvenido de nuevo, {userName}</p>
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
               <StatsCard
                 title="Total Ventas"
                 value={loading ? 'Cargando...' : `$${stats?.totalVentas.toLocaleString('es-MX', { minimumFractionDigits: 2 }) || '0.00'}`}
@@ -327,8 +409,8 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Charts Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-              <SalesChart />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
+              <SalesChart data={salesData} />
               <TopEventsList events={topEvents} />
             </div>
 

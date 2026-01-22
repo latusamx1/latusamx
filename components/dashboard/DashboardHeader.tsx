@@ -27,11 +27,11 @@ export default function DashboardHeader({
   const initials = getInitials(userName)
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8">
+    <header className="h-14 sm:h-16 bg-white border-b border-gray-200 flex items-center justify-between px-3 sm:px-4 lg:px-8">
       {/* Mobile Menu Button */}
       {onMenuClick && (
-        <button className="lg:hidden p-2" onClick={onMenuClick}>
-          <Menu className="w-6 h-6" />
+        <button className="lg:hidden p-1.5 sm:p-2" onClick={onMenuClick}>
+          <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
         </button>
       )}
 
@@ -39,11 +39,11 @@ export default function DashboardHeader({
       {showSearch && (
         <div className="hidden md:block flex-1 max-w-md">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
             <input
               type="search"
               placeholder="Buscar eventos, reservas..."
-              className="w-full h-10 pl-10 pr-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full h-9 sm:h-10 pl-8 sm:pl-10 pr-3 sm:pr-4 text-sm sm:text-base rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
         </div>
@@ -52,8 +52,8 @@ export default function DashboardHeader({
       {/* Title for Mobile (when no search) */}
       {!showSearch && (
         <div className="flex-1">
-          <h1 className="text-xl font-bold text-gray-900">{title}</h1>
-          {subtitle && <p className="text-sm text-gray-600">{subtitle}</p>}
+          <h1 className="text-base sm:text-xl font-bold text-gray-900">{title}</h1>
+          {subtitle && <p className="text-xs sm:text-sm text-gray-600">{subtitle}</p>}
         </div>
       )}
 
