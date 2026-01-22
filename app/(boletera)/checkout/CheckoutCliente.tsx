@@ -249,21 +249,21 @@ export default function CheckoutCliente() {
       <CheckoutBreadcrumb />
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Finalizar Compra</h1>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 sm:mb-8">Finalizar Compra</h1>
 
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
             {/* Form Steps */}
             <div className="lg:col-span-2">
               {/* Steps Indicator */}
-              <div className="mb-8">
+              <div className="mb-6 sm:mb-8">
                 <div className="flex items-center justify-between">
                   {steps.map((step, index) => (
                     <div key={step.number} className="flex items-center flex-1">
                       <div className="flex items-center">
                         <div
-                          className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
+                          className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm sm:text-base font-semibold ${
                             currentStep >= step.number
                               ? 'bg-blue-600 text-white'
                               : 'bg-gray-200 text-gray-600'
@@ -271,7 +271,7 @@ export default function CheckoutCliente() {
                         >
                           {step.number}
                         </div>
-                        <div className="ml-3 hidden md:block">
+                        <div className="ml-2 sm:ml-3 hidden md:block">
                           <p
                             className={`text-sm font-medium ${
                               currentStep >= step.number ? 'text-blue-600' : 'text-gray-500'
@@ -284,7 +284,7 @@ export default function CheckoutCliente() {
                       </div>
                       {index < steps.length - 1 && (
                         <div
-                          className={`flex-1 h-1 mx-4 ${
+                          className={`flex-1 h-0.5 sm:h-1 mx-2 sm:mx-4 ${
                             currentStep > step.number ? 'bg-blue-600' : 'bg-gray-200'
                           }`}
                         />
