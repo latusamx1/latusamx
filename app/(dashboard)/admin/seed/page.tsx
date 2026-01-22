@@ -1,12 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { db } from '@/lib/firebase/config'
-import { collection, addDoc, Timestamp, getDocs, query, where } from 'firebase/firestore'
-import { Loader2, CheckCircle, XCircle, Database, Trash2 } from 'lucide-react'
+import { collection, addDoc, Timestamp, getDocs, query, where, deleteDoc, doc } from 'firebase/firestore'
+import { Loader2, CheckCircle, XCircle, Database, Trash2, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
+import { DiagnosticoFirebase } from './diagnostico'
+import { DiagnosticoAuth } from './diagnostico-auth'
+import { FixEventos } from './fix-eventos'
 
 const eventos = [
   // EVENTO 1: Stock Alto
@@ -70,6 +73,7 @@ const eventos = [
       }
     ],
     estado: 'publicado' as const,
+    status: 'publicado' as const, // Campo requerido por EventosCatalogo
     destacado: true,
     tags: ['electronica', 'festival', 'techno', 'house'],
     precioMinimo: 1500,
@@ -136,6 +140,7 @@ const eventos = [
       }
     ],
     estado: 'publicado' as const,
+    status: 'publicado' as const, // Campo requerido por EventosCatalogo
     destacado: true,
     tags: ['cumbia', 'mexicano'],
     precioMinimo: 800,
@@ -202,6 +207,7 @@ const eventos = [
       }
     ],
     estado: 'publicado' as const,
+    status: 'publicado' as const, // Campo requerido por EventosCatalogo
     destacado: false,
     tags: ['comedia', 'stand-up'],
     precioMinimo: 650,
@@ -214,10 +220,24 @@ const eventos = [
 export default function SeedPage() {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<any>(null)
+  const [firebaseReady, setFirebaseReady] = useState(false)
+
+  useEffect(() => {
+    // Verificar que Firebase esté inicializado
+    if (db) {
+      setFirebaseReady(true)
+    } else {
+      console.error('Firebase no está inicializado')
+    }
+  }, [])
 
   const ejecutarSeed = async () => {
+    console.log('Ejecutando seed...')
+    console.log('Firebase DB:', db)
+
     if (!db) {
-      toast.error('Firebase no inicializado')
+      toast.error('Firebase no inicializado. Verifica tu configuración en .env.local')
+      console.error('Firebase DB no está disponible')
       return
     }
 
@@ -225,11 +245,14 @@ export default function SeedPage() {
     setResult(null)
 
     try {
+      console.log('Creando colección de eventos...')
       const eventosRef = collection(db, 'eventos')
       const created = []
 
       for (const evento of eventos) {
+        console.log('Creando evento:', evento.titulo)
         const docRef = await addDoc(eventosRef, evento)
+        console.log('Evento creado con ID:', docRef.id)
 
         const totalDisponibles = evento.tiposTickets.reduce((sum, t) => sum + t.disponibles, 0)
         const totalTickets = evento.tiposTickets.reduce((sum, t) => sum + t.cantidad, 0)
@@ -248,12 +271,15 @@ export default function SeedPage() {
         })
       }
 
+      console.log('Todos los eventos creados:', created)
       setResult({ success: true, eventos: created })
       toast.success(`${eventos.length} eventos creados exitosamente`)
     } catch (error) {
-      console.error('Error:', error)
-      setResult({ success: false, error: error instanceof Error ? error.message : 'Error desconocido' })
-      toast.error('Error al crear eventos')
+      console.error('Error completo:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+      console.error('Mensaje de error:', errorMessage)
+      setResult({ success: false, error: errorMessage })
+      toast.error(`Error al crear eventos: ${errorMessage}`)
     } finally {
       setLoading(false)
     }
@@ -276,8 +302,8 @@ export default function SeedPage() {
       const snapshot = await getDocs(eventosRef)
 
       let eliminados = 0
-      for (const doc of snapshot.docs) {
-        await doc.ref.delete()
+      for (const docSnap of snapshot.docs) {
+        await deleteDoc(doc(db, 'eventos', docSnap.id))
         eliminados++
       }
 
@@ -298,6 +324,24 @@ export default function SeedPage() {
         <p className="mt-2 text-gray-600">Herramienta para crear eventos de prueba</p>
       </div>
 
+      <DiagnosticoAuth />
+      <DiagnosticoFirebase />
+      <FixEventos />
+
+      {!firebaseReady && (
+        <Card className="border-red-300 bg-red-50">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2 text-red-800">
+              <AlertCircle className="h-5 w-5" />
+              <p className="font-medium">Firebase no está inicializado correctamente</p>
+            </div>
+            <p className="mt-2 text-sm text-red-700">
+              Verifica que las variables de entorno en .env.local estén configuradas correctamente.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle>Acciones Disponibles</CardTitle>
@@ -307,7 +351,7 @@ export default function SeedPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex gap-3">
-            <Button onClick={ejecutarSeed} disabled={loading} className="flex-1">
+            <Button onClick={ejecutarSeed} disabled={loading || !firebaseReady} className="flex-1">
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -321,7 +365,7 @@ export default function SeedPage() {
               )}
             </Button>
 
-            <Button onClick={limpiarEventos} disabled={loading} variant="destructive">
+            <Button onClick={limpiarEventos} disabled={loading || !firebaseReady} variant="destructive">
               <Trash2 className="mr-2 h-4 w-4" />
               Limpiar Todos
             </Button>

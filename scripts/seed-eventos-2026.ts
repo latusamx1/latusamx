@@ -73,6 +73,7 @@ const eventos = [
       }
     ],
     estado: 'publicado',
+    status: 'publicado', // Campo requerido por EventosCatalogo
     destacado: true,
     tags: ['electronica', 'festival', 'techno', 'house'],
     precioMinimo: 1500,
@@ -144,6 +145,7 @@ const eventos = [
       }
     ],
     estado: 'publicado',
+    status: 'publicado', // Campo requerido por EventosCatalogo
     destacado: true,
     tags: ['cumbia', 'mexicano', 'bailar', 'familia'],
     precioMinimo: 800,
@@ -215,6 +217,7 @@ const eventos = [
       }
     ],
     estado: 'publicado',
+    status: 'publicado', // Campo requerido por EventosCatalogo
     destacado: false,
     tags: ['comedia', 'stand-up', 'humor', 'franco-escamilla'],
     precioMinimo: 650,

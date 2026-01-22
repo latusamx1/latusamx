@@ -1,1 +1,1 @@
-# CRM BBQ Josué - Sistema de Boletería
+# CRM LATUSAMX - Sistema de Boletería
