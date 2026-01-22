@@ -29,7 +29,7 @@ const navigationSections = [
   {
     title: 'Principal',
     items: [
-      { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard/admin' },
+      { icon: LayoutDashboard, label: 'Dashboard', href: '/admin' },
     ],
   },
   {

@@ -154,9 +154,9 @@ export const ROL_PERMISSIONS: Record<Rol, Permission[]> = {
  * Define las rutas del dashboard según el rol
  */
 export const ROL_ROUTES: Record<Rol, string> = {
-  [Rol.ADMIN]: '/dashboard/admin',
-  [Rol.HOST]: '/dashboard/host',
-  [Rol.CLIENTE]: '/dashboard/cliente',
+  [Rol.ADMIN]: '/admin',
+  [Rol.HOST]: '/host',
+  [Rol.CLIENTE]: '/cliente',
 }
 
 /**

@@ -96,7 +96,7 @@ export function isCliente(user: UserWithRole | null): boolean {
  */
 export function getDashboardRoute(user: UserWithRole | null): string {
   if (!user) return '/login'
-  return ROL_ROUTES[user.rol] || '/dashboard/cliente'
+  return ROL_ROUTES[user.rol] || '/cliente'
 }
 
 /**

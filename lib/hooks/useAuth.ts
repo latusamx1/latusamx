@@ -51,18 +51,18 @@ export function useAuth() {
 
     if (!profile) {
       // Si no hay perfil, redirigir a una página de error o configuración
-      router.push('/dashboard/cliente')
+      router.push('/cliente')
       return
     }
 
     // Mapeo de roles a rutas
     const roleRoutes: Record<string, string> = {
-      admin: '/dashboard/admin',
-      host: '/dashboard/host',
-      cliente: '/dashboard/cliente',
+      admin: '/admin',
+      host: '/host',
+      cliente: '/cliente',
     }
 
-    const route = roleRoutes[profile.rol] || '/dashboard/cliente'
+    const route = roleRoutes[profile.rol] || '/cliente'
     router.push(route)
   }
 

@@ -46,35 +46,35 @@ export function Sidebar({ className }: SidebarProps) {
     // Admin: Acceso completo
     if (userRole === Rol.ADMIN) {
       return [
-        { href: '/dashboard/admin', label: 'Dashboard', icon: LayoutDashboard },
-        { href: '/dashboard/admin/eventos', label: 'Eventos', icon: Ticket },
-        { href: '/dashboard/admin/reservas', label: 'Reservas', icon: Calendar },
-        { href: '/dashboard/admin/ordenes', label: 'Órdenes', icon: ShoppingBag },
-        { href: '/dashboard/admin/usuarios', label: 'Usuarios', icon: Users },
-        { href: '/dashboard/admin/sucursales', label: 'Sucursales', icon: MapPin },
-        { href: '/dashboard/admin/reportes', label: 'Reportes', icon: BarChart3 },
-        { href: '/dashboard/admin/configuracion', label: 'Configuración', icon: Settings },
+        { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+        { href: '/admin/eventos', label: 'Eventos', icon: Ticket },
+        { href: '/admin/reservas', label: 'Reservas', icon: Calendar },
+        { href: '/admin/ordenes', label: 'Órdenes', icon: ShoppingBag },
+        { href: '/admin/usuarios', label: 'Usuarios', icon: Users },
+        { href: '/admin/sucursales', label: 'Sucursales', icon: MapPin },
+        { href: '/admin/reportes', label: 'Reportes', icon: BarChart3 },
+        { href: '/admin/configuracion', label: 'Configuración', icon: Settings },
       ]
     }
 
     // Host: Operaciones del día
     if (userRole === Rol.HOST) {
       return [
-        { href: '/dashboard/host', label: 'Dashboard', icon: LayoutDashboard },
-        { href: '/dashboard/host/scanner', label: 'Scanner QR', icon: Scan },
-        { href: '/dashboard/host/reservas', label: 'Reservas', icon: Calendar },
-        { href: '/dashboard/host/checkin', label: 'Check-in', icon: Users },
-        { href: '/dashboard/host/mesas', label: 'Mesas', icon: Home },
-        { href: '/dashboard/host/eventos', label: 'Eventos Hoy', icon: Ticket },
+        { href: '/host', label: 'Dashboard', icon: LayoutDashboard },
+        { href: '/host/scanner', label: 'Scanner QR', icon: Scan },
+        { href: '/host/reservas', label: 'Reservas', icon: Calendar },
+        { href: '/host/checkin', label: 'Check-in', icon: Users },
+        { href: '/host/mesas', label: 'Mesas', icon: Home },
+        { href: '/host/eventos', label: 'Eventos Hoy', icon: Ticket },
       ]
     }
 
     // Cliente: Panel personal
     return [
-      { href: '/dashboard/cliente', label: 'Mi Dashboard', icon: LayoutDashboard },
-      { href: '/dashboard/cliente/tickets', label: 'Mis Tickets', icon: Ticket },
-      { href: '/dashboard/cliente/reservas', label: 'Mis Reservas', icon: Calendar },
-      { href: '/dashboard/cliente/ordenes', label: 'Mis Órdenes', icon: ShoppingBag },
+      { href: '/cliente', label: 'Mi Dashboard', icon: LayoutDashboard },
+      { href: '/cliente/tickets', label: 'Mis Tickets', icon: Ticket },
+      { href: '/cliente/reservas', label: 'Mis Reservas', icon: Calendar },
+      { href: '/cliente/ordenes', label: 'Mis Órdenes', icon: ShoppingBag },
       { href: '/eventos', label: 'Ver Eventos', icon: Ticket },
       { href: '/reservas', label: 'Reservar Mesa', icon: Calendar },
     ]
