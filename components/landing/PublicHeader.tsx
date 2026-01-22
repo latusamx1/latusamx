@@ -35,11 +35,11 @@ export function PublicHeader() {
   return (
     <nav className="bg-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <div className="w-fit h-fit p-2 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">LATUSAMX</span>
+            <div className="w-fit h-fit p-1.5 sm:p-2 bg-linear-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-lg sm:text-xl">LATUSAMX</span>
             </div>
           </Link>
 
@@ -59,9 +59,11 @@ export function PublicHeader() {
             </a>
 
             {userRole && (
-              <Badge variant="outline" className={ROL_COLORS[userRole]}>
-                {ROL_LABELS[userRole]}
-              </Badge>
+              <Link href={`/${userRole}`}>
+                <Badge variant="outline" className={ROL_COLORS[userRole]}>
+                  {ROL_LABELS[userRole]}
+                </Badge>
+              </Link>
             )}
             {
               userProfile ? (
@@ -151,7 +153,7 @@ export function PublicHeader() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <div className=' flex items-center justify-end gap-2 mt-2'>
-                  
+
                   <div className="">
                     <h2>{userProfile?.nombre}</h2>
                     <h4>{userProfile?.email}</h4>
@@ -167,7 +169,7 @@ export function PublicHeader() {
                 </div>
 
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-screen bg-white" align="end" forceMount>
+              <DropdownMenuContent className="w-56 sm:w-64 bg-white" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">{userProfile?.nombre}</p>

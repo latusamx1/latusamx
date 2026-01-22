@@ -73,12 +73,12 @@ export function FeaturesSection() {
         </div>
 
         {/* Eventos Features */}
-        <div id="eventos" className="mb-20">
-          <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">
-            <Ticket className="w-8 h-8 inline-block mr-2 text-blue-600" />
+        <div id="eventos" className="mb-12 sm:mb-16 md:mb-20">
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 sm:mb-8 text-center">
+            <Ticket className="w-6 h-6 sm:w-8 sm:h-8 inline-block mr-2 text-blue-600" />
             Módulo de Boletera
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {eventosFeatures.map((feature, index) => (
               <FeatureCard key={index} {...feature} />
             ))}
@@ -87,11 +87,11 @@ export function FeaturesSection() {
 
         {/* Reservas Features */}
         <div id="reservas">
-          <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">
-            <Utensils className="w-8 h-8 inline-block mr-2 text-purple-600" />
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 sm:mb-8 text-center">
+            <Utensils className="w-6 h-6 sm:w-8 sm:h-8 inline-block mr-2 text-purple-600" />
             Módulo de Reservas
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {reservasFeatures.map((feature, index) => (
               <FeatureCard key={index} {...feature} />
             ))}
