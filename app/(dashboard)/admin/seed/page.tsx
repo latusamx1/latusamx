@@ -11,6 +11,79 @@ import { DiagnosticoFirebase } from './diagnostico'
 import { DiagnosticoAuth } from './diagnostico-auth'
 import { FixEventos } from './fix-eventos'
 
+const venues = [
+  {
+    nombre: 'Centro de Convenciones',
+    direccion: 'Av. Principal 123, Centro',
+    ciudad: 'Ciudad de México',
+    estado: 'CDMX',
+    codigoPostal: '06000',
+    capacidad: 500,
+    descripcion: 'Amplio centro de convenciones con todas las amenidades',
+    amenidades: ['Estacionamiento', 'Aire acondicionado', 'WiFi', 'Audio profesional'],
+    imagenes: ['https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80'],
+    telefono: '55-1234-5678',
+    email: 'contacto@centroconvenciones.com',
+    activo: true,
+  },
+  {
+    nombre: 'Salón de Eventos "El Gran Jardín"',
+    direccion: 'Calle Jardines 456',
+    ciudad: 'Monterrey',
+    estado: 'Nuevo León',
+    codigoPostal: '64000',
+    capacidad: 300,
+    descripcion: 'Elegante salón con hermosos jardines al aire libre',
+    amenidades: ['Jardín', 'Terraza', 'Estacionamiento', 'Catering'],
+    imagenes: ['https://images.unsplash.com/photo-1519167758481-83f29da8c424?w=800&q=80'],
+    telefono: '81-9876-5432',
+    email: 'eventos@elgranjardin.com',
+    activo: true,
+  },
+  {
+    nombre: 'Teatro Municipal',
+    direccion: 'Plaza Cultural 789',
+    ciudad: 'Guadalajara',
+    estado: 'Jalisco',
+    codigoPostal: '44100',
+    capacidad: 800,
+    descripcion: 'Histórico teatro con excelente acústica',
+    amenidades: ['Butacas numeradas', 'Sistema de audio', 'Iluminación profesional', 'Camerinos'],
+    imagenes: ['https://images.unsplash.com/photo-1503095396549-807759245b35?w=800&q=80'],
+    telefono: '33-5555-1234',
+    email: 'info@teatromunicipal.com',
+    activo: true,
+  },
+  {
+    nombre: 'Club Deportivo Arena',
+    direccion: 'Av. Deportiva 321',
+    ciudad: 'Puebla',
+    estado: 'Puebla',
+    codigoPostal: '72000',
+    capacidad: 1000,
+    descripcion: 'Arena multiusos ideal para eventos deportivos y conciertos',
+    amenidades: ['Gradas', 'Vestidores', 'Estacionamiento amplio', 'Cafetería'],
+    imagenes: ['https://images.unsplash.com/photo-1526888935184-a82d2a4b7e67?w=800&q=80'],
+    telefono: '222-8888-9999',
+    email: 'reservas@clubarena.com',
+    activo: true,
+  },
+  {
+    nombre: 'Restaurante "La Terraza"',
+    direccion: 'Paseo del Río 567',
+    ciudad: 'Querétaro',
+    estado: 'Querétaro',
+    codigoPostal: '76000',
+    capacidad: 150,
+    descripcion: 'Restaurante con terraza y vista panorámica',
+    amenidades: ['Terraza', 'Bar', 'Cocina completa', 'Vista panorámica'],
+    imagenes: ['https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80'],
+    telefono: '442-3333-7777',
+    email: 'eventos@laterraza.com',
+    activo: true,
+  },
+]
+
 const eventos = [
   // EVENTO 1: Stock Alto
   {
@@ -219,7 +292,9 @@ const eventos = [
 
 export default function SeedPage() {
   const [loading, setLoading] = useState(false)
+  const [loadingVenues, setLoadingVenues] = useState(false)
   const [result, setResult] = useState<any>(null)
+  const [venuesResult, setVenuesResult] = useState<any>(null)
   const [firebaseReady, setFirebaseReady] = useState(false)
 
   useEffect(() => {
@@ -285,6 +360,52 @@ export default function SeedPage() {
     }
   }
 
+  const ejecutarSeedVenues = async () => {
+    console.log('Ejecutando seed de venues...')
+
+    if (!db) {
+      toast.error('Firebase no inicializado. Verifica tu configuración en .env.local')
+      return
+    }
+
+    setLoadingVenues(true)
+    setVenuesResult(null)
+
+    try {
+      console.log('Creando colección de venues...')
+      const venuesRef = collection(db, 'venues')
+      const created = []
+
+      for (const venue of venues) {
+        console.log('Creando venue:', venue.nombre)
+        const docRef = await addDoc(venuesRef, {
+          ...venue,
+          createdAt: Timestamp.now(),
+          updatedAt: Timestamp.now(),
+        })
+        console.log('Venue creado con ID:', docRef.id)
+
+        created.push({
+          id: docRef.id,
+          nombre: venue.nombre,
+          ciudad: venue.ciudad,
+          capacidad: venue.capacidad,
+        })
+      }
+
+      console.log('Todos los venues creados:', created)
+      setVenuesResult({ success: true, venues: created })
+      toast.success(`${venues.length} lugares creados exitosamente`)
+    } catch (error) {
+      console.error('Error completo:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+      setVenuesResult({ success: false, error: errorMessage })
+      toast.error(`Error al crear lugares: ${errorMessage}`)
+    } finally {
+      setLoadingVenues(false)
+    }
+  }
+
   const limpiarEventos = async () => {
     if (!db) {
       toast.error('Firebase no inicializado')
@@ -317,6 +438,38 @@ export default function SeedPage() {
     }
   }
 
+  const limpiarVenues = async () => {
+    if (!db) {
+      toast.error('Firebase no inicializado')
+      return
+    }
+
+    if (!confirm('¿Estás seguro de eliminar todos los lugares? Esta acción no se puede deshacer.')) {
+      return
+    }
+
+    setLoadingVenues(true)
+
+    try {
+      const venuesRef = collection(db, 'venues')
+      const snapshot = await getDocs(venuesRef)
+
+      let eliminados = 0
+      for (const docSnap of snapshot.docs) {
+        await deleteDoc(doc(db, 'venues', docSnap.id))
+        eliminados++
+      }
+
+      toast.success(`${eliminados} lugares eliminados`)
+      setVenuesResult(null)
+    } catch (error) {
+      console.error('Error:', error)
+      toast.error('Error al eliminar lugares')
+    } finally {
+      setLoadingVenues(false)
+    }
+  }
+
   return (
     <div className="mx-auto max-w-4xl space-y-6 p-6">
       <div>
@@ -342,9 +495,73 @@ export default function SeedPage() {
         </Card>
       )}
 
+      {/* Card de Venues */}
       <Card>
         <CardHeader>
-          <CardTitle>Acciones Disponibles</CardTitle>
+          <CardTitle>Lugares (Venues)</CardTitle>
+          <CardDescription>
+            Crea lugares de prueba para asociar con los eventos
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-3">
+            <Button onClick={ejecutarSeedVenues} disabled={loadingVenues || !firebaseReady} className="flex-1">
+              {loadingVenues ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creando...
+                </>
+              ) : (
+                <>
+                  <Database className="mr-2 h-4 w-4" />
+                  Crear {venues.length} Lugares
+                </>
+              )}
+            </Button>
+
+            <Button onClick={limpiarVenues} disabled={loadingVenues || !firebaseReady} variant="destructive">
+              <Trash2 className="mr-2 h-4 w-4" />
+              Limpiar Venues
+            </Button>
+          </div>
+
+          {venuesResult && (
+            <div className={`rounded-lg border p-4 ${venuesResult.success ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
+              {venuesResult.success ? (
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <h3 className="font-semibold text-green-900">Lugares Creados Exitosamente</h3>
+                  </div>
+                  <div className="space-y-2">
+                    {venuesResult.venues.map((venue: any, i: number) => (
+                      <div key={i} className="rounded bg-white p-2 text-sm">
+                        <div className="font-medium text-gray-900">{venue.nombre}</div>
+                        <div className="text-gray-600 text-xs">
+                          {venue.ciudad} - Capacidad: {venue.capacidad}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <XCircle className="h-5 w-5 text-red-600" />
+                    <h3 className="font-semibold text-red-900">Error al Crear Lugares</h3>
+                  </div>
+                  <p className="text-sm text-red-800">{venuesResult.error}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Card de Eventos */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Eventos</CardTitle>
           <CardDescription>
             Crea eventos de prueba para testing del sistema de inventario
           </CardDescription>
@@ -367,7 +584,7 @@ export default function SeedPage() {
 
             <Button onClick={limpiarEventos} disabled={loading || !firebaseReady} variant="destructive">
               <Trash2 className="mr-2 h-4 w-4" />
-              Limpiar Todos
+              Limpiar Eventos
             </Button>
           </div>
 

@@ -197,7 +197,7 @@ export default function EventosAdminPage() {
   }
 
   const handleCreateEvento = () => {
-    router.push('/admin/eventos/crear')
+    router.push('/admin/eventos/nuevo')
   }
 
   return (
