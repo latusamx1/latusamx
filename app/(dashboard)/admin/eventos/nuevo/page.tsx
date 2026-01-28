@@ -12,6 +12,7 @@ import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import { Timestamp } from 'firebase/firestore'
+import { FeatureGate } from '@/components/shared/FeatureGate'
 
 export default function NuevoEventoPage() {
   const router = useRouter()
@@ -105,6 +106,10 @@ export default function NuevoEventoPage() {
 
   return (
     <RequireAdmin>
+      <FeatureGate
+        fallbackTitle="Crear Evento - Próximamente"
+        fallbackDescription="La funcionalidad para crear nuevos eventos estará disponible muy pronto. Estamos preparando todo para ti."
+      >
       {/* Navigation */}
       <nav className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -207,6 +212,7 @@ export default function NuevoEventoPage() {
           </div>
         </div>
       </div>
+      </FeatureGate>
     </RequireAdmin>
   )
 }

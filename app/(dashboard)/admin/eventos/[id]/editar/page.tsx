@@ -11,6 +11,7 @@ import { EventoFormData } from '@/lib/validations/evento.schema'
 import { ArrowLeft, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import { FeatureGate } from '@/components/shared/FeatureGate'
 
 export default function EditarEventoPage() {
   const router = useRouter()
@@ -137,6 +138,10 @@ export default function EditarEventoPage() {
 
   return (
     <RequireAdmin>
+      <FeatureGate
+        fallbackTitle="Editar Evento - Próximamente"
+        fallbackDescription="La funcionalidad para editar eventos estará disponible muy pronto. Estamos preparando todo para ti."
+      >
       {/* Navigation */}
       <nav className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -265,6 +270,7 @@ export default function EditarEventoPage() {
           </div>
         </div>
       </div>
+      </FeatureGate>
     </RequireAdmin>
   )
 }
