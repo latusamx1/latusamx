@@ -606,26 +606,26 @@ utils/
 ### 7.2: Gestión de Eventos
 
 #### Lista de Eventos
-- [ ] `app/(dashboard)/admin/eventos/page.tsx`
-- [ ] Tabla con DataTable de shadcn/ui
-- [ ] Filtros y búsqueda
-- [ ] Acciones (Editar, Pausar, Eliminar)
-- [ ] Botón "+ Crear Evento"
+- ✅ `app/(dashboard)/admin/eventos/page.tsx`
+- ✅ Tabla con DataTable de shadcn/ui
+- ✅ Filtros y búsqueda
+- ✅ Acciones (Editar, Pausar, Eliminar)
+- ✅ Botón "+ Crear Evento"
 
 #### Crear/Editar Evento
-- [ ] `app/(dashboard)/admin/eventos/nuevo/page.tsx`
-- [ ] `app/(dashboard)/admin/eventos/[id]/editar/page.tsx`
-- [ ] Form multi-sección con React Hook Form
-- [ ] Upload de imagen a Cloudinary
-- [ ] Crear tipos de tickets dinámicamente
-- [ ] Validación con Zod
-- [ ] Guardar en Firestore
+- ✅ `app/(dashboard)/admin/eventos/nuevo/page.tsx`
+- ✅ `app/(dashboard)/admin/eventos/[id]/editar/page.tsx`
+- ✅ Form multi-sección con React Hook Form
+- ✅ Upload de imagen a Cloudinary
+- ✅ Crear tipos de tickets dinámicamente
+- ✅ Validación con Zod
+- ✅ Guardar en Firestore
 
 ### 7.3: Gestión de Venues
-- [ ] `app/(dashboard)/admin/venues/page.tsx`
-- [ ] CRUD completo de venues
-- [ ] Modal con formulario
-- [ ] Validación de capacidad
+- ✅ `app/(dashboard)/admin/venues/page.tsx`
+- ✅ CRUD completo de venues
+- ✅ Modal con formulario
+- ✅ Validación de capacidad
 
 ### 7.4: Códigos de Descuento
 - [ ] `app/(dashboard)/admin/descuentos/page.tsx`

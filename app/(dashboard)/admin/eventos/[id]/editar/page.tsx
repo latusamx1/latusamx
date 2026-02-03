@@ -127,8 +127,8 @@ export default function EditarEventoPage() {
             <p className="text-gray-600 mb-4">
               Necesitas tener al menos un lugar disponible para editar eventos.
             </p>
-            <Button onClick={() => router.push('/admin/venues/nuevo')}>
-              Crear Lugar
+            <Button onClick={() => router.push('/admin/venues')}>
+              Ir a Gestión de Venues
             </Button>
           </div>
         </div>

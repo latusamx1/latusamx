@@ -21,19 +21,25 @@ export interface Usuario {
 
 export type EstadoEvento = 'borrador' | 'publicado' | 'pausado' | 'cancelado' | 'finalizado'
 export type CategoriaEvento = 'concierto' | 'deportes' | 'teatro' | 'festival' | 'otro'
+export type EstadoVenue = 'activo' | 'inactivo' | 'mantenimiento'
 
 export interface Venue {
   id: string
   nombre: string
   direccion: string
   ciudad: string
-  estado: string
+  estado: string // Estado geográfico (ej: CDMX, Jalisco)
   codigoPostal: string
   capacidad: number
   ubicacion?: {
     lat: number
     lng: number
   }
+  estadoVenue?: EstadoVenue // Estado operativo del venue
+  telefono?: string
+  email?: string
+  sitioWeb?: string
+  descripcion?: string
   createdAt: Date
   updatedAt: Date
 }

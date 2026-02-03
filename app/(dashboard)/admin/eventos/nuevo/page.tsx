@@ -95,8 +95,8 @@ export default function NuevoEventoPage() {
             <p className="text-gray-600 mb-4">
               Necesitas crear al menos un lugar antes de poder crear eventos.
             </p>
-            <Button onClick={() => router.push('/admin/venues/nuevo')}>
-              Crear Lugar
+            <Button onClick={() => router.push('/admin/venues')}>
+              Ir a Gestión de Venues
             </Button>
           </div>
         </div>
