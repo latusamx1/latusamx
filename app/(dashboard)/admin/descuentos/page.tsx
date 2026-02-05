@@ -71,7 +71,7 @@ export default function DescuentosAdminPage() {
   useEffect(() => {
     if (!db) return
 
-    const codigosRef = collection(db, 'codigosDescuento')
+    const codigosRef = collection(db, 'codigos-descuento')
     const q = query(codigosRef, orderBy('createdAt', 'desc'))
 
     const unsubscribe = onSnapshot(
@@ -171,7 +171,7 @@ export default function DescuentosAdminPage() {
     try {
       if (selectedCodigo) {
         // Actualizar
-        await updateDoc(doc(db, 'codigosDescuento', selectedCodigo.id), {
+        await updateDoc(doc(db, 'codigos-descuento', selectedCodigo.id), {
           descripcion: data.descripcion,
           tipo: data.tipo,
           valor: data.valor,
@@ -195,7 +195,7 @@ export default function DescuentosAdminPage() {
         }
 
         // Crear
-        await addDoc(collection(db, 'codigosDescuento'), {
+        await addDoc(collection(db, 'codigos-descuento'), {
           codigo: data.codigo.toUpperCase(),
           descripcion: data.descripcion,
           tipo: data.tipo,
@@ -230,7 +230,7 @@ export default function DescuentosAdminPage() {
     if (!db || !codigoToDelete) return
 
     try {
-      await deleteDoc(doc(db, 'codigosDescuento', codigoToDelete.id))
+      await deleteDoc(doc(db, 'codigos-descuento', codigoToDelete.id))
       toast.success('Código eliminado correctamente')
     } catch (error) {
       console.error('Error deleting codigo:', error)

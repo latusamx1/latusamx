@@ -27,7 +27,7 @@ export interface ValidacionDescuento {
  * Servicio para gestión de códigos de descuento
  */
 export class DescuentosService {
-  private collectionName = 'codigosDescuento'
+  private collectionName = 'codigos-descuento'
 
   /**
    * Obtener código por ID
