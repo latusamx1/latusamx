@@ -628,10 +628,10 @@ utils/
 - ✅ Validación de capacidad
 
 ### 7.4: Códigos de Descuento
-- [ ] `app/(dashboard)/admin/descuentos/page.tsx`
-- [ ] Tabla de códigos activos
-- [ ] Modal crear/editar código
-- [ ] Validar código en checkout
+- ✅ `app/(dashboard)/admin/descuentos/page.tsx`
+- ✅ Tabla de códigos activos
+- ✅ Modal crear/editar código
+- ✅ Validar código en checkout
 
 ### 7.5: Gestión de Órdenes
 - [ ] `app/(dashboard)/admin/ordenes/page.tsx`
