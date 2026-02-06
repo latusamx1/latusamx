@@ -50,7 +50,7 @@ export default function DashboardSidebar({ isOpen, onClose }: SidebarProps) {
             { icon: Ticket, label: 'Eventos', href: '/admin/eventos' },
             { icon: PlusCircle, label: 'Crear Evento', href: '/admin/eventos/crear' },
             { icon: MapPin, label: 'Venues', href: '/admin/venues' },
-            { icon: Percent, label: 'Códigos', href: '/admin/codigos' },
+            { icon: Percent, label: 'Descuentos', href: '/admin/descuentos' },
           ],
         },
         {
